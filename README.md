@@ -1,4 +1,32 @@
-## Hi, I'm Peter 👋
+<h1 align="left">Hi 👋, I'm Afolabi Peter</h1>
+<h3 align="left">Full-stack engineer building software that handles money, bookings and trust.</h3>
+
+- 🔭 I'm currently building **[Oja Ledger](https://oja-ledger.vercel.app)**, offline tamper-evident bookkeeping for Nigerian traders
+- 🌱 I'm going deeper on **TypeScript, PostgreSQL and testing that proves things** (property-based tests, DB constraints)
+- 👯 I'm looking to collaborate on **fintech, marketplaces and tools for African small businesses**
+- 💼 Open to **junior full-stack / frontend / backend roles** (remote or Nigeria) and freelance builds
+- 📫 Reach me: **afolabiprosper329@gmail.com** · [LinkedIn](https://www.linkedin.com/in/afolabipeter-dev)
+
+<h3 align="left">Languages and tools</h3>
+<p align="left">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/python/python-original.svg" alt="Python" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/django/django-plain.svg" alt="Django" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/typescript/typescript-original.svg" alt="TypeScript" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/javascript/javascript-original.svg" alt="JavaScript" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/react/react-original.svg" alt="React" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/nextjs/nextjs-original.svg" alt="Next.js" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/postgresql/postgresql-original.svg" alt="PostgreSQL" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/supabase/supabase-original.svg" alt="Supabase" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/tailwindcss/tailwindcss-original.svg" alt="Tailwind CSS" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/git/git-original.svg" alt="Git" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/githubactions/githubactions-original.svg" alt="GitHub Actions" width="38" height="38"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/vercel/vercel-original.svg" alt="Vercel" width="38" height="38"/>
+</p>
+
+<p align="left"><img src="https://streak-stats.demolab.com/?user=peterafolabi-dev&hide_border=true" alt="GitHub streak" height="150"/></p>
+
+---
+
 
 **Full-stack engineer in Nigeria building software that handles money, bookings and trust: the parts where bugs cost real people.**
 Python · Django · TypeScript · React/Next.js · PostgreSQL · Computer Engineering at FUT Minna (CGPA 3.79/5).
@@ -24,4 +52,3 @@ Each repo has a **case study or engineering-decisions section** explaining the t
 ### Open to
 **Junior full-stack, frontend or backend roles (remote or Nigeria)** and freelance builds for startups and small businesses.
 
-📫 [LinkedIn](https://www.linkedin.com/in/afolabipeter-dev) · afolabiprosper329@gmail.com
