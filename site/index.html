@@ -31,7 +31,8 @@
 *{box-sizing:border-box;margin:0}
 html{scroll-behavior:smooth;scroll-padding-top:80px}
 body{background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--display);-webkit-font-smoothing:antialiased;
-  background-image:radial-gradient(color-mix(in srgb,var(--rule) 80%,transparent) 1.1px,transparent 1.2px);background-size:26px 26px}
+  background-image:radial-gradient(color-mix(in srgb,var(--rule) 70%,transparent) 1px,transparent 1.1px);background-size:30px 30px;background-position:-15px -15px}
+body::before{content:"";position:fixed;inset:-20% -10% auto auto;width:720px;height:720px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--marker) 26%,transparent),transparent 65%);filter:blur(30px);pointer-events:none;z-index:-1}
 a{color:inherit}
 img{max-width:100%;display:block}
 :focus-visible{outline:3px solid var(--red);outline-offset:3px;border-radius:6px}
@@ -39,31 +40,39 @@ img{max-width:100%;display:block}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
 @media (max-width:600px){.wrap{padding:0 16px}}
 
-/* nav */
-header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .2s}
-header.scrolled{border-color:var(--rule)}
-.nav{display:flex;align-items:center;gap:20px;height:68px}
-.logo{font-weight:800;font-size:19px;text-decoration:none;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
-.logo i{width:30px;height:30px;border-radius:9px;background:var(--ink);color:var(--marker);display:grid;place-items:center;font:700 22px/1 var(--hand);font-style:normal}
-.nav nav{margin-left:auto;display:flex;gap:4px}
-.nav nav a{text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600;font-size:15px;color:var(--ink-soft)}
-.nav nav a:hover{background:var(--sheet);color:var(--ink)}
-.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;font-weight:700;text-decoration:none;border:0;cursor:pointer;font:700 16px/1 var(--display);transition:transform .15s,box-shadow .15s}
+/* nav: a floating pill */
+header{position:sticky;top:14px;z-index:20;padding:0 16px;pointer-events:none}
+.nav{pointer-events:auto;max-width:860px;margin:0 auto;display:flex;align-items:center;gap:14px;height:58px;padding:0 8px 0 16px;border-radius:999px;
+  background:color-mix(in srgb,var(--sheet) 78%,transparent);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);
+  border:1px solid color-mix(in srgb,var(--rule) 85%,transparent);box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 30px -18px rgba(40,25,10,.45);transition:box-shadow .3s}
+header.scrolled .nav{box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 18px 40px -18px rgba(40,25,10,.55)}
+.logo{font-weight:800;font-size:17px;text-decoration:none;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.logo i{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--marker);display:grid;place-items:center;font:700 21px/1 var(--hand);font-style:normal}
+.nav nav{margin-left:auto;display:flex;gap:2px}
+.nav nav a{text-decoration:none;padding:8px 14px;border-radius:999px;font-weight:600;font-size:15px;color:var(--ink-soft);transition:background .2s,color .2s}
+.nav nav a:hover,.nav nav a.on{background:color-mix(in srgb,var(--rule) 60%,transparent);color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 22px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;font:700 16px/1 var(--display);transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s,background .2s}
 .btn:active{transform:scale(.97)}
-.btn-ink{background:var(--ink);color:var(--paper);box-shadow:3px 4px 0 var(--red)}
-.btn-ink:hover{transform:translate(-1px,-1px);box-shadow:5px 6px 0 var(--red)}
-.btn-line{border:1.5px solid var(--ink);color:var(--ink);background:transparent}
-.btn-line:hover{background:var(--sheet)}
-.btn-sm{padding:9px 14px;font-size:14px}
-@media (max-width:720px){.nav nav{display:none}}
+.btn-ink{background:var(--ink);color:var(--paper);box-shadow:0 10px 24px -12px rgba(28,25,23,.7)}
+.btn-ink:hover{transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(28,25,23,.7)}
+.btn-line{border:1.5px solid color-mix(in srgb,var(--ink) 80%,transparent);color:var(--ink);background:transparent}
+.btn-line:hover{background:var(--sheet);transform:translateY(-2px)}
+.btn-sm{padding:10px 16px;font-size:14px}
+.btn .ar{transition:transform .2s}
+.btn:hover .ar{transform:translateX(3px)}
+@media (max-width:720px){.nav nav{display:none}.nav{padding-left:12px}}
 
 /* hero */
-.hero{padding:72px 0 56px;position:relative}
+.hero{padding:84px 0 64px;position:relative}
+.w{display:inline-block;opacity:0;transform:translateY(.45em);animation:up .8s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes up{to{opacity:1;transform:none}}
+@keyframes swipe{from{transform:rotate(-1.4deg) skewX(-6deg) scaleX(0)}to{transform:rotate(-1.4deg) skewX(-6deg) scaleX(1)}}
+.fade-in{opacity:0;animation:up .8s cubic-bezier(.2,.8,.2,1) forwards}
 .hey{font:700 34px/1 var(--hand);color:var(--red);transform:rotate(-3deg);display:inline-block;margin-left:4px}
 h1{font-weight:800;font-size:clamp(44px,7.4vw,92px);line-height:.98;letter-spacing:-.045em;margin:18px 0 0;max-width:13ch}
 .mark{position:relative;z-index:0;white-space:nowrap}
 .mark{color:#1C1917}
-.mark::before{content:"";position:absolute;left:-.12em;right:-.14em;top:.48em;bottom:.04em;background:var(--marker);border-radius:6px 14px 8px 16px;transform:rotate(-1.4deg) skewX(-6deg);z-index:-1;opacity:.9}
+.mark::before{content:"";position:absolute;left:-.12em;right:-.14em;top:.48em;bottom:.04em;background:var(--marker);border-radius:6px 14px 8px 16px;transform:rotate(-1.4deg) skewX(-6deg);transform-origin:left;z-index:-1;opacity:.92;animation:swipe .7s .75s cubic-bezier(.6,0,.2,1) both}
 .lede{margin-top:26px;font-size:clamp(18px,2.1vw,22px);line-height:1.5;color:var(--ink-soft);max-width:56ch}
 .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
 .status{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px}
@@ -83,32 +92,33 @@ section{padding:64px 0}
 h2{font-weight:800;font-size:clamp(32px,4.4vw,52px);letter-spacing:-.035em;line-height:1}
 .sec-head p{color:var(--ink-soft);max-width:48ch}
 
-/* work */
-.work{display:grid;gap:28px}
-.proj{display:grid;grid-template-columns:1.15fr 1fr;gap:0;background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 18px 40px -28px rgba(60,40,20,.45)}
-.proj:nth-child(even){grid-template-columns:1fr 1.15fr}
-.proj:nth-child(even) .shot{order:2;border-left:1px solid var(--rule);border-right:0}
-.shot{position:relative;background:color-mix(in srgb,var(--paper) 60%,var(--sheet));border-right:1px solid var(--rule);padding:22px 22px 0;display:flex;flex-direction:column;justify-content:end;min-height:320px}
-.frame{border-radius:12px 12px 0 0;overflow:hidden;border:1px solid var(--rule);border-bottom:0;box-shadow:0 20px 40px -22px rgba(30,20,10,.55);background:#fff;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
-.proj:hover .frame{transform:translateY(-6px)}
-.frame .bar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:#EFE9DE;font:500 12px var(--mono);color:#7A716A}
-.frame .bar i{width:9px;height:9px;border-radius:50%;background:#D3CABA}
-.frame .bar span{margin-left:8px;background:#fff;border-radius:6px;padding:3px 10px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.frame img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:left top}
-.body{padding:30px 32px 30px}
+/* work: each project on its own tinted stage */
+.work{display:grid;gap:40px}
+.proj{border-radius:28px;background:var(--sheet);border:1px solid var(--rule);overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 30px 60px -40px rgba(60,40,20,.5)}
+.stage{position:relative;padding:44px 44px 0;background:var(--tint);overflow:hidden;isolation:isolate}
+.stage::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 90% at 85% 0%,rgba(255,255,255,.22),transparent 60%),radial-gradient(60% 70% at 0% 100%,rgba(0,0,0,.18),transparent 60%);z-index:-1}
+.stage .lbl{position:absolute;left:44px;top:22px;font:600 12.5px var(--mono);color:var(--tint-ink);opacity:.85;display:flex;gap:10px;align-items:center}
+.stage .lbl i{width:7px;height:7px;border-radius:50%;background:#7CF0B0;box-shadow:0 0 0 3px rgba(124,240,176,.25)}
+.shot{margin:18px auto 0;max-width:900px;border-radius:16px 16px 0 0;overflow:hidden;box-shadow:0 30px 60px -24px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.12);transform:translateY(10px);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.proj:hover .shot{transform:translateY(0) scale(1.01)}
+.shot img{width:100%;aspect-ratio:16/9;object-fit:cover;object-position:left top}
+.t-oja{--tint:#0B2B26;--tint-ink:#E9D79B}
+.t-travel{--tint:#0F5A43;--tint-ink:#CFF3E1}
+.t-red{--tint:#B2321F;--tint-ink:#FFE1D8}
+.t-study{--tint:#3B1D8F;--tint-ink:#E3DAFF}
+.body{display:grid;grid-template-columns:1.05fr 1fr;gap:36px;padding:34px 44px 40px}
 .kicker{font:600 13px var(--mono);color:var(--mute)}
-.proj h3{font-weight:800;font-size:34px;letter-spacing:-.03em;line-height:1.05;margin:8px 0 10px}
-.proj .what{color:var(--ink-soft)}
-.hard{margin-top:20px;padding:16px 18px;border-radius:14px;background:color-mix(in srgb,var(--marker) 18%,var(--sheet));border:1px dashed color-mix(in srgb,var(--ink) 25%,transparent);position:relative}
-.hard .note{position:absolute;top:-18px;right:14px;font:700 24px/1 var(--hand);color:var(--red);transform:rotate(-3deg);background:var(--sheet);padding:0 6px}
-.hard p{font-size:15.5px;line-height:1.55}
-.hard p+p{margin-top:8px}
-code{font:500 .88em var(--mono);background:color-mix(in srgb,var(--rule) 55%,transparent);padding:1px 6px;border-radius:5px}
+.proj h3{font-weight:800;font-size:clamp(30px,3.6vw,42px);letter-spacing:-.035em;line-height:1;margin:8px 0 12px}
+.proj .what{color:var(--ink-soft);font-size:17px}
+.hard{padding:20px 22px;border-radius:18px;background:color-mix(in srgb,var(--marker) 16%,var(--sheet));border:1px dashed color-mix(in srgb,var(--ink) 22%,transparent);position:relative;align-self:start}
+.hard .note{position:absolute;top:-17px;left:18px;font:700 25px/1 var(--hand);color:var(--red);transform:rotate(-2deg);background:var(--sheet);padding:0 8px;border-radius:6px}
+.hard p{font-size:15.5px;line-height:1.6}
+.hard p+p{margin-top:10px}
+code{font:500 .86em var(--mono);background:color-mix(in srgb,var(--rule) 55%,transparent);padding:2px 7px;border-radius:6px}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
-.tags span{font:500 12.5px var(--mono);padding:4px 9px;border-radius:7px;border:1px solid var(--rule);color:var(--ink-soft)}
-.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
-.proof{display:inline-flex;align-items:center;gap:6px;font:600 13px var(--mono);color:var(--green)}
-@media (max-width:880px){.proj,.proj:nth-child(even){grid-template-columns:1fr}.proj:nth-child(even) .shot{order:0;border-left:0}.shot{border-right:0;border-bottom:1px solid var(--rule);min-height:0}.body{padding:24px 20px}}
+.tags span{font:500 12.5px var(--mono);padding:5px 10px;border-radius:999px;background:color-mix(in srgb,var(--rule) 40%,transparent);color:var(--ink-soft)}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+@media (max-width:880px){.stage{padding:40px 16px 0}.stage .lbl{left:18px;top:16px}.body{grid-template-columns:1fr;gap:26px;padding:24px 20px 28px}.proj{border-radius:22px}}
 
 /* principles */
 .princ{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
@@ -145,7 +155,7 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
 /* the proof receipt beside the hero */
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:48px;align-items:center}
 @media (max-width:1040px){.hero-grid{grid-template-columns:1fr}.receipt{display:none}}
-.receipt{position:relative;background:var(--sheet);border:1px solid var(--rule);border-radius:6px 6px 0 0;padding:26px 24px 26px;font:400 14px/1.5 var(--mono);transform:rotate(2deg);box-shadow:0 24px 50px -28px rgba(60,40,20,.55);
+.receipt{position:relative;background:var(--sheet);border:1px solid var(--rule);border-radius:6px 6px 0 0;padding:26px 24px 26px;font:400 14px/1.5 var(--mono);rotate:2deg;box-shadow:0 24px 50px -28px rgba(60,40,20,.55);
 }
 .receipt::after{content:"";position:absolute;left:-1px;right:-1px;bottom:-10px;height:10px;background:radial-gradient(circle at 9px -1px,transparent 9px,var(--sheet) 9.5px) -9px 0/18px 10px repeat-x}
 .receipt h4{font:700 15px var(--mono);text-align:center;letter-spacing:.06em}
@@ -165,7 +175,7 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
 <header id="top">
   <div class="wrap nav">
     <a class="logo" href="#top"><i>P</i>Afolabi Peter</a>
-    <nav aria-label="Main"><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+    <nav aria-label="Main"><a href="#work">Work</a><a href="#how">Approach</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
     <a class="btn btn-line btn-sm" href="Afolabi-Peter-CV.pdf" download>Download CV</a>
   </div>
 </header>
@@ -175,13 +185,13 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
    <div>
     <span class="hey">hey, I'm Peter</span>
     <svg class="arrow" viewBox="0 0 120 60" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M4 10c40-10 80 2 104 34"/><path d="M92 40l17 6-3-18"/></svg>
-    <h1>I build software people trust with <span class="mark">their money.</span></h1>
-    <p class="lede">Full-stack engineer in Nigeria. I make the parts that can't afford to be wrong: payments verified on the server, double bookings the database itself refuses, and books that can't go out of balance by a single kobo.</p>
-    <div class="cta">
+    <h1><span class="w" style="animation-delay:0ms">I</span> <span class="w" style="animation-delay:60ms">build</span> <span class="w" style="animation-delay:120ms">software</span> <span class="w" style="animation-delay:180ms">people</span> <span class="w" style="animation-delay:240ms">trust</span> <span class="w" style="animation-delay:300ms">with</span> <span class="w" style="animation-delay:360ms"><span class="mark">their money.</span></span></h1>
+    <p class="lede fade-in" style="animation-delay:.55s">Full-stack engineer in Nigeria. I make the parts that can't afford to be wrong: payments verified on the server, double bookings the database itself refuses, and books that can't go out of balance by a single kobo.</p>
+    <div class="cta fade-in" style="animation-delay:.7s">
       <a class="btn btn-ink" href="#work">See my work</a>
       <a class="btn btn-line" href="mailto:afolabiprosper329@gmail.com?subject=Hello%20Peter">Email me</a>
     </div>
-    <div class="status" aria-label="Live apps">
+    <div class="status fade-in" style="animation-delay:.85s" aria-label="Live apps">
       <a class="chip" href="https://oja-ledger.vercel.app"><span class="dot"></span>Oja Ledger is live</a>
       <a class="chip" href="https://travel-stays.vercel.app"><span class="dot"></span>Travel &amp; Stays is live</a>
       <a class="chip" href="https://redcart-ten.vercel.app"><span class="dot"></span>RedCart is live</a>
@@ -190,10 +200,10 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
     <div class="facts">
       <div><b>260+</b><span>automated tests across my apps</span></div>
       <div><b>5</b><span>repos with CI on every push</span></div>
-      <div><b>3.79</b><span>CGPA, Computer Engineering, FUT Minna</span></div>
+      <div><b>3.79</b><span>CGPA, Computer Eng.</span></div>
     </div>
    </div>
-   <aside class="receipt" aria-label="What my code guarantees">
+   <aside class="receipt fade-in" style="animation-delay:.9s" aria-label="What my code guarantees">
      <h4>PROOF OF WORK</h4>
      <div class="sub">checked by CI on every push</div>
      <div class="ln"><span>Payment amounts verified</span><b>PASS</b></div>
@@ -215,62 +225,70 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
       </div>
 
       <div class="work">
-        <article class="proj reveal">
-          <div class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>oja-ledger.vercel.app</span></div><img src="img/oja.jpg" alt="Oja Ledger dashboard with daily sales, profit, VAT and tax check" loading="lazy" width="1200" height="750"></div></div>
+        <article class="proj t-oja reveal">
+          <div class="stage"><span class="lbl"><i></i>oja-ledger.vercel.app</span><div class="shot"><img src="img/oja.jpg" alt="Oja Ledger dashboard with daily sales, profit, VAT and tax check" loading="lazy" width="1200" height="750"></div></div>
           <div class="body">
-            <div class="kicker">2026 · Fintech · Own product</div>
-            <h3>Oja Ledger</h3>
-            <p class="what">Offline double-entry bookkeeping for Nigerian traders. Record a sale in two taps with no network, and get profit, VAT returns and the small-company tax check under the Nigeria Tax Act 2025.</p>
-            <div class="hard"><span class="note">the hard part</span>
-              <p>Every entry is sealed with a <b>SHA-256 hash</b> of the one before it, so editing any past naira is detectable. Money is integer kobo, never floats.</p>
-              <p><b>Property-based tests</b> throw 800 random trading histories at the engine on every push and prove the books always balance.</p>
+            <div>
+              <div class="kicker">2026 · Fintech · Own product</div>
+              <h3>Oja Ledger</h3>
+              <p class="what">Offline double-entry bookkeeping for Nigerian traders. Record a sale in two taps with no network, and get profit, VAT returns and the small-company tax check under the Nigeria Tax Act 2025.</p>
+              <div class="links"><a class="btn btn-ink btn-sm" href="https://oja-ledger.vercel.app">Try the demo</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/oja-ledger/blob/main/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/oja-ledger">Code</a></div>
             </div>
-            <div class="tags"><span>TypeScript</span><span>React</span><span>Tailwind</span><span>IndexedDB</span><span>PWA</span><span>fast-check</span></div>
-            <div class="links"><a class="btn btn-ink btn-sm" href="https://oja-ledger.vercel.app">Try the demo</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/oja-ledger/blob/main/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/oja-ledger">Code</a></div>
+            <div>
+              <div class="hard"><span class="note">the hard part</span><p>Every entry is sealed with a <b>SHA-256 hash</b> of the one before it, so editing any past naira is detectable. Money is integer kobo, never floats.</p>
+              <p><b>Property-based tests</b> throw 800 random trading histories at the engine on every push and prove the books always balance.</p></div>
+              <div class="tags"><span>TypeScript</span><span>React</span><span>Tailwind</span><span>IndexedDB</span><span>PWA</span><span>fast-check</span></div>
+            </div>
           </div>
         </article>
 
-        <article class="proj reveal">
-          <div class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>travel-stays.vercel.app</span></div><img src="img/travel.jpg" alt="Travel and Stays home page with search by city and dates" loading="lazy" width="1000" height="523"></div></div>
+        <article class="proj t-travel reveal">
+          <div class="stage"><span class="lbl"><i></i>travel-stays.vercel.app</span><div class="shot"><img src="img/travel.jpg" alt="Travel and Stays home page with search by city and dates" loading="lazy" width="1000" height="523"></div></div>
           <div class="body">
-            <div class="kicker">Aug – Oct 2026 · Marketplace · MALhub internship</div>
-            <h3>Travel &amp; Stays</h3>
-            <p class="what">A two-sided marketplace for verified stays and local tours across Nigeria, with guests, hosts and tour guides, Paystack payments in naira and an admin dashboard.</p>
-            <div class="hard"><span class="note">the hard part</span>
-              <p>Two guests can't book the same dates, even in the same second: a Postgres <code>exclude using gist</code> constraint makes it impossible.</p>
-              <p>A booking is only marked paid after the server checks with Paystack that the <b>exact amount and currency</b> arrived, covered by 11 unit tests.</p>
+            <div>
+              <div class="kicker">Aug – Oct 2026 · Marketplace · MALhub internship</div>
+              <h3>Travel &amp; Stays</h3>
+              <p class="what">A two-sided marketplace for verified stays and local tours across Nigeria, with guests, hosts and tour guides, Paystack payments in naira and an admin dashboard.</p>
+              <div class="links"><a class="btn btn-ink btn-sm" href="https://travel-stays.vercel.app">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/travel-stays/blob/master/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/travel-stays">Code</a></div>
             </div>
-            <div class="tags"><span>React</span><span>Supabase</span><span>PostgreSQL</span><span>Row-level security</span><span>Paystack</span></div>
-            <div class="links"><a class="btn btn-ink btn-sm" href="https://travel-stays.vercel.app">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/travel-stays/blob/master/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/travel-stays">Code</a></div>
+            <div>
+              <div class="hard"><span class="note">the hard part</span><p>Two guests can't book the same dates, even in the same second: a Postgres <code>exclude using gist</code> constraint makes it impossible.</p>
+              <p>A booking is only marked paid after the server checks with Paystack that the <b>exact amount and currency</b> arrived, covered by 11 unit tests.</p></div>
+              <div class="tags"><span>React</span><span>Supabase</span><span>PostgreSQL</span><span>Row-level security</span><span>Paystack</span></div>
+            </div>
           </div>
         </article>
 
-        <article class="proj reveal">
-          <div class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>redcart-ten.vercel.app</span></div><img src="img/redcart.jpg" alt="RedCart online store with product categories" loading="lazy" width="1000" height="523"></div></div>
+        <article class="proj t-red reveal">
+          <div class="stage"><span class="lbl"><i></i>redcart-ten.vercel.app</span><div class="shot"><img src="img/redcart.jpg" alt="RedCart online store with product categories" loading="lazy" width="1000" height="523"></div></div>
           <div class="body">
-            <div class="kicker">Dec 2025 – now · E-commerce · Own product</div>
-            <h3>RedCart</h3>
-            <p class="what">An online store with 103 products, Google sign-in, Paystack checkout, review fraud scoring, an AI shopping assistant, and a second storefront in Next.js reading the store's API.</p>
-            <div class="hard"><span class="note">the hard part</span>
-              <p>The AI assistant isn't allowed to guess. Order status and stock come from the database; policy answers come from real documents through a small retrieval layer.</p>
-              <p>Payments are re-checked against the cart total on the server before an order exists. 83 tests run in CI.</p>
+            <div>
+              <div class="kicker">Dec 2025 – now · E-commerce · Own product</div>
+              <h3>RedCart</h3>
+              <p class="what">An online store with 103 products, Google sign-in, Paystack checkout, review fraud scoring, an AI shopping assistant, and a second storefront in Next.js reading the store's API.</p>
+              <div class="links"><a class="btn btn-ink btn-sm" href="https://redcart-ten.vercel.app">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/Retail-Logistics-Core/blob/main/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/Retail-Logistics-Core">Code</a></div>
             </div>
-            <div class="tags"><span>Django</span><span>PostgreSQL</span><span>Next.js</span><span>TypeScript</span><span>Groq LLM</span><span>RAG</span></div>
-            <div class="links"><a class="btn btn-ink btn-sm" href="https://redcart-ten.vercel.app">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/Retail-Logistics-Core/blob/main/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/Retail-Logistics-Core">Code</a></div>
+            <div>
+              <div class="hard"><span class="note">the hard part</span><p>The AI assistant isn't allowed to guess. Order status and stock come from the database; policy answers come from real documents through a small retrieval layer.</p>
+              <p>Payments are re-checked against the cart total on the server before an order exists. 83 tests run in CI.</p></div>
+              <div class="tags"><span>Django</span><span>PostgreSQL</span><span>Next.js</span><span>TypeScript</span><span>Groq LLM</span><span>RAG</span></div>
+            </div>
           </div>
         </article>
 
-        <article class="proj reveal">
-          <div class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>studyflow-xt1x.onrender.com</span></div><img src="img/studyflow.jpg" alt="StudyFlow student dashboard with tasks and flashcards" loading="lazy" width="1200" height="750"></div></div>
+        <article class="proj t-study reveal">
+          <div class="stage"><span class="lbl"><i></i>studyflow-xt1x.onrender.com</span><div class="shot"><img src="img/studyflow.jpg" alt="StudyFlow student dashboard with tasks and flashcards" loading="lazy" width="1200" height="750"></div></div>
           <div class="body">
-            <div class="kicker">2026 · EdTech · For FUT Minna students</div>
-            <h3>StudyFlow</h3>
-            <p class="what">A study platform with a 24/7 AI coach that renders maths properly, deadlines and reminders, spaced-repetition flashcards, CBT practice and study groups.</p>
-            <div class="hard"><span class="note">the hard part</span>
-              <p>Uploads are judged by their bytes, not their names: a renamed <code>.exe</code> is rejected by its magic bytes. AI output is sanitised before it touches the page, and AI features are rate-limited per user.</p>
+            <div>
+              <div class="kicker">2026 · EdTech · For FUT Minna students</div>
+              <h3>StudyFlow</h3>
+              <p class="what">A study platform with a 24/7 AI coach that renders maths properly, deadlines and reminders, spaced-repetition flashcards, CBT practice and study groups.</p>
+              <div class="links"><a class="btn btn-ink btn-sm" href="https://studyflow-xt1x.onrender.com">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/studyflow">Code</a></div>
             </div>
-            <div class="tags"><span>Django</span><span>Python</span><span>Tailwind</span><span>KaTeX</span><span>Groq</span><span>113 tests</span></div>
-            <div class="links"><a class="btn btn-ink btn-sm" href="https://studyflow-xt1x.onrender.com">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/studyflow">Code</a></div>
+            <div>
+              <div class="hard"><span class="note">the hard part</span><p>Uploads are judged by their bytes, not their names: a renamed <code>.exe</code> is rejected by its magic bytes. AI output is sanitised before it touches the page, and AI features are rate-limited per user.</p></div>
+              <div class="tags"><span>Django</span><span>Python</span><span>Tailwind</span><span>KaTeX</span><span>Groq</span><span>113 tests</span></div>
+            </div>
           </div>
         </article>
       </div>
@@ -326,6 +344,9 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
 
 <script>
   const h = document.querySelector('header')
+  const links = [...document.querySelectorAll('.nav nav a')]
+  const spy = 'IntersectionObserver' in window && new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && links.forEach((a) => a.classList.toggle('on', a.hash === '#' + e.target.id))), { rootMargin: '-45% 0px -50% 0px' })
+  spy && ['work', 'how', 'about', 'contact'].forEach((id) => document.getElementById(id) && spy.observe(document.getElementById(id)))
   addEventListener('scroll', () => h.classList.toggle('scrolled', scrollY > 8), { passive: true })
   const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { rootMargin: '0px 0px -8% 0px' }) : null
   document.querySelectorAll('.reveal').forEach((el) => (io ? io.observe(el) : el.classList.add('in')))
