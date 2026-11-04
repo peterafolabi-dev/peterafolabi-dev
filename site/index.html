@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afolabi Peter · Full-stack engineer</title>
+<meta name="description" content="Afolabi Peter builds software that handles money, bookings and trust: payments verified on the server, double bookings blocked by the database, books that can't go out of balance.">
+<meta property="og:title" content="Afolabi Peter · Full-stack engineer">
+<meta property="og:description" content="I build software people trust with their money. Four live apps, 260+ automated tests.">
+<meta property="og:image" content="img/og.jpg">
+<meta name="theme-color" content="#F6F1E7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231C1917'/%3E%3Ctext x='32' y='43' font-family='Georgia' font-size='30' text-anchor='middle' fill='%23FFD84D'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"Bricolage Grotesque";src:url(fonts/bricolage-grotesque-latin-wght-normal.woff2) format("woff2");font-weight:200 800;font-display:swap}
+@font-face{font-family:"Caveat";src:url(fonts/caveat-latin-700-normal.woff2) format("woff2");font-weight:600 700;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2");font-weight:400 500;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(fonts/jetbrains-mono-latin-600-normal.woff2) format("woff2");font-weight:600;font-display:swap}
+:root{
+  --paper:#F6F1E7; --sheet:#FFFDF8; --ink:#1C1917; --ink-soft:#4A4541; --mute:#7A716A; --rule:#E4DBCB;
+  --red:#D9472B; --marker:#FFD84D; --green:#1F8A4C;
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --hand:"Caveat",cursive; --mono:"JetBrains Mono",ui-monospace,monospace;
+  --max:1120px; --r:18px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#15120F; --sheet:#1E1A16; --ink:#F3ECDF; --ink-soft:#CFC5B5; --mute:#A1968A; --rule:#3A332B;
+  --red:#FF7357; --marker:#FFD84D; --green:#5CCB8D; color-scheme:dark;}}
+:root[data-theme="dark"]{--paper:#15120F; --sheet:#1E1A16; --ink:#F3ECDF; --ink-soft:#CFC5B5; --mute:#A1968A; --rule:#3A332B; --red:#FF7357; --green:#5CCB8D; color-scheme:dark}
+
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--display);-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(color-mix(in srgb,var(--rule) 80%,transparent) 1.1px,transparent 1.2px);background-size:26px 26px}
+a{color:inherit}
+img{max-width:100%;display:block}
+:focus-visible{outline:3px solid var(--red);outline-offset:3px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+@media (max-width:600px){.wrap{padding:0 16px}}
+
+/* nav */
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .2s}
+header.scrolled{border-color:var(--rule)}
+.nav{display:flex;align-items:center;gap:20px;height:68px}
+.logo{font-weight:800;font-size:19px;text-decoration:none;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--ink);color:var(--marker);display:grid;place-items:center;font:700 22px/1 var(--hand);font-style:normal}
+.nav nav{margin-left:auto;display:flex;gap:4px}
+.nav nav a{text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600;font-size:15px;color:var(--ink-soft)}
+.nav nav a:hover{background:var(--sheet);color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;font-weight:700;text-decoration:none;border:0;cursor:pointer;font:700 16px/1 var(--display);transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.97)}
+.btn-ink{background:var(--ink);color:var(--paper);box-shadow:3px 4px 0 var(--red)}
+.btn-ink:hover{transform:translate(-1px,-1px);box-shadow:5px 6px 0 var(--red)}
+.btn-line{border:1.5px solid var(--ink);color:var(--ink);background:transparent}
+.btn-line:hover{background:var(--sheet)}
+.btn-sm{padding:9px 14px;font-size:14px}
+@media (max-width:720px){.nav nav{display:none}}
+
+/* hero */
+.hero{padding:72px 0 56px;position:relative}
+.hey{font:700 34px/1 var(--hand);color:var(--red);transform:rotate(-3deg);display:inline-block;margin-left:4px}
+h1{font-weight:800;font-size:clamp(44px,7.4vw,92px);line-height:.98;letter-spacing:-.045em;margin:18px 0 0;max-width:13ch}
+.mark{position:relative;z-index:0;white-space:nowrap}
+.mark{color:#1C1917}
+.mark::before{content:"";position:absolute;left:-.12em;right:-.14em;top:.48em;bottom:.04em;background:var(--marker);border-radius:6px 14px 8px 16px;transform:rotate(-1.4deg) skewX(-6deg);z-index:-1;opacity:.9}
+.lede{margin-top:26px;font-size:clamp(18px,2.1vw,22px);line-height:1.5;color:var(--ink-soft);max-width:56ch}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+.status{display:flex;flex-wrap:wrap;gap:10px;margin-top:40px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:var(--sheet);border:1px solid var(--rule);font-size:14px;font-weight:600;text-decoration:none}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 22%,transparent)}
+.chip:hover{border-color:var(--ink-soft)}
+.facts{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:12px 40px;margin-top:44px;padding-top:24px;border-top:1px dashed var(--rule)}
+.facts b{display:block;font:600 28px/1 var(--mono);letter-spacing:-.02em}
+.facts span{color:var(--mute);font-size:14px}
+@media (max-width:600px){.facts{grid-template-columns:1fr 1fr}}
+.arrow{position:absolute;left:150px;top:46px;width:120px;color:var(--red);pointer-events:none}
+@media (max-width:720px){.arrow{display:none}}
+
+/* sections */
+section{padding:64px 0}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+h2{font-weight:800;font-size:clamp(32px,4.4vw,52px);letter-spacing:-.035em;line-height:1}
+.sec-head p{color:var(--ink-soft);max-width:48ch}
+
+/* work */
+.work{display:grid;gap:28px}
+.proj{display:grid;grid-template-columns:1.15fr 1fr;gap:0;background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 18px 40px -28px rgba(60,40,20,.45)}
+.proj:nth-child(even){grid-template-columns:1fr 1.15fr}
+.proj:nth-child(even) .shot{order:2;border-left:1px solid var(--rule);border-right:0}
+.shot{position:relative;background:color-mix(in srgb,var(--paper) 60%,var(--sheet));border-right:1px solid var(--rule);padding:22px 22px 0;display:flex;flex-direction:column;justify-content:end;min-height:320px}
+.frame{border-radius:12px 12px 0 0;overflow:hidden;border:1px solid var(--rule);border-bottom:0;box-shadow:0 20px 40px -22px rgba(30,20,10,.55);background:#fff;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.proj:hover .frame{transform:translateY(-6px)}
+.frame .bar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:#EFE9DE;font:500 12px var(--mono);color:#7A716A}
+.frame .bar i{width:9px;height:9px;border-radius:50%;background:#D3CABA}
+.frame .bar span{margin-left:8px;background:#fff;border-radius:6px;padding:3px 10px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.frame img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:left top}
+.body{padding:30px 32px 30px}
+.kicker{font:600 13px var(--mono);color:var(--mute)}
+.proj h3{font-weight:800;font-size:34px;letter-spacing:-.03em;line-height:1.05;margin:8px 0 10px}
+.proj .what{color:var(--ink-soft)}
+.hard{margin-top:20px;padding:16px 18px;border-radius:14px;background:color-mix(in srgb,var(--marker) 18%,var(--sheet));border:1px dashed color-mix(in srgb,var(--ink) 25%,transparent);position:relative}
+.hard .note{position:absolute;top:-18px;right:14px;font:700 24px/1 var(--hand);color:var(--red);transform:rotate(-3deg);background:var(--sheet);padding:0 6px}
+.hard p{font-size:15.5px;line-height:1.55}
+.hard p+p{margin-top:8px}
+code{font:500 .88em var(--mono);background:color-mix(in srgb,var(--rule) 55%,transparent);padding:1px 6px;border-radius:5px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.tags span{font:500 12.5px var(--mono);padding:4px 9px;border-radius:7px;border:1px solid var(--rule);color:var(--ink-soft)}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.proof{display:inline-flex;align-items:center;gap:6px;font:600 13px var(--mono);color:var(--green)}
+@media (max-width:880px){.proj,.proj:nth-child(even){grid-template-columns:1fr}.proj:nth-child(even) .shot{order:0;border-left:0}.shot{border-right:0;border-bottom:1px solid var(--rule);min-height:0}.body{padding:24px 20px}}
+
+/* principles */
+.princ{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.princ div{padding:24px;border-radius:var(--r);background:var(--sheet);border:1px solid var(--rule)}
+.princ h3{font-size:21px;letter-spacing:-.02em;line-height:1.2;margin-bottom:8px}
+.princ p{color:var(--ink-soft);font-size:15.5px}
+@media (max-width:880px){.princ{grid-template-columns:1fr}}
+
+/* timeline */
+.time{list-style:none;padding:0;border-left:2px solid var(--rule);margin-left:6px}
+.time li{position:relative;padding:0 0 30px 28px}
+.time li::before{content:"";position:absolute;left:-8px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:3px solid var(--ink)}
+.time li:first-child::before{background:var(--marker)}
+.time .when{font:600 13px var(--mono);color:var(--mute)}
+.time h3{font-size:21px;letter-spacing:-.02em;margin:2px 0 4px}
+.time p{color:var(--ink-soft);max-width:68ch}
+.two{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:start}
+@media (max-width:880px){.two{grid-template-columns:1fr;gap:28px}}
+.stack{display:flex;flex-wrap:wrap;gap:8px}
+.stack span{padding:8px 12px;border-radius:10px;background:var(--sheet);border:1px solid var(--rule);font-weight:600;font-size:14.5px}
+.stack span b{font-weight:600;color:var(--mute);font-size:12px;margin-left:6px}
+
+/* contact */
+.contact{margin:24px 0 64px;padding:56px 40px;border-radius:28px;background:var(--ink);color:var(--paper);position:relative;overflow:hidden}
+.contact h2{color:var(--paper);max-width:16ch}
+.contact p{color:color-mix(in srgb,var(--paper) 72%,transparent);margin-top:14px;max-width:52ch;font-size:19px}
+.contact .cta .btn-ink{background:var(--marker);color:#1C1917;box-shadow:3px 4px 0 var(--red)}
+.contact .cta .btn-line{border-color:color-mix(in srgb,var(--paper) 50%,transparent);color:var(--paper)}
+.contact .cta .btn-line:hover{background:rgba(255,255,255,.06)}
+.contact .scrawl{position:absolute;right:40px;top:36px;font:700 32px/1 var(--hand);color:var(--marker);transform:rotate(-6deg)}
+@media (max-width:720px){.contact{padding:40px 22px}.contact .scrawl{display:none}}
+footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* the proof receipt beside the hero */
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:48px;align-items:center}
+@media (max-width:1040px){.hero-grid{grid-template-columns:1fr}.receipt{display:none}}
+.receipt{position:relative;background:var(--sheet);border:1px solid var(--rule);border-radius:6px 6px 0 0;padding:26px 24px 26px;font:400 14px/1.5 var(--mono);transform:rotate(2deg);box-shadow:0 24px 50px -28px rgba(60,40,20,.55);
+}
+.receipt::after{content:"";position:absolute;left:-1px;right:-1px;bottom:-10px;height:10px;background:radial-gradient(circle at 9px -1px,transparent 9px,var(--sheet) 9.5px) -9px 0/18px 10px repeat-x}
+.receipt h4{font:700 15px var(--mono);text-align:center;letter-spacing:.06em}
+.receipt .sub{text-align:center;color:var(--mute);font-size:12px;margin-bottom:14px}
+.receipt .ln{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed var(--rule)}
+.receipt .ln b{color:var(--green);font-weight:600}
+.receipt .tot{display:flex;justify-content:space-between;margin-top:12px;font-weight:600;font-size:15px}
+.receipt .stamp{position:absolute;right:-30px;top:-40px;width:112px;height:112px;border-radius:50%;border:3px double var(--red);color:var(--red);display:grid;place-items:center;text-align:center;font:700 22px/1 var(--hand);transform:rotate(-14deg);background:color-mix(in srgb,var(--sheet) 85%,transparent)}
+.receipt .hash{margin-top:14px;font-size:11px;color:var(--mute);word-break:break-all}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<header id="top">
+  <div class="wrap nav">
+    <a class="logo" href="#top"><i>P</i>Afolabi Peter</a>
+    <nav aria-label="Main"><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+    <a class="btn btn-line btn-sm" href="Afolabi-Peter-CV.pdf" download>Download CV</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero hero-grid">
+   <div>
+    <span class="hey">hey, I'm Peter</span>
+    <svg class="arrow" viewBox="0 0 120 60" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M4 10c40-10 80 2 104 34"/><path d="M92 40l17 6-3-18"/></svg>
+    <h1>I build software people trust with <span class="mark">their money.</span></h1>
+    <p class="lede">Full-stack engineer in Nigeria. I make the parts that can't afford to be wrong: payments verified on the server, double bookings the database itself refuses, and books that can't go out of balance by a single kobo.</p>
+    <div class="cta">
+      <a class="btn btn-ink" href="#work">See my work</a>
+      <a class="btn btn-line" href="mailto:afolabiprosper329@gmail.com?subject=Hello%20Peter">Email me</a>
+    </div>
+    <div class="status" aria-label="Live apps">
+      <a class="chip" href="https://oja-ledger.vercel.app"><span class="dot"></span>Oja Ledger is live</a>
+      <a class="chip" href="https://travel-stays.vercel.app"><span class="dot"></span>Travel &amp; Stays is live</a>
+      <a class="chip" href="https://redcart-ten.vercel.app"><span class="dot"></span>RedCart is live</a>
+      <a class="chip" href="https://studyflow-xt1x.onrender.com"><span class="dot"></span>StudyFlow is live</a>
+    </div>
+    <div class="facts">
+      <div><b>260+</b><span>automated tests across my apps</span></div>
+      <div><b>5</b><span>repos with CI on every push</span></div>
+      <div><b>3.79</b><span>CGPA, Computer Engineering, FUT Minna</span></div>
+    </div>
+   </div>
+   <aside class="receipt" aria-label="What my code guarantees">
+     <h4>PROOF OF WORK</h4>
+     <div class="sub">checked by CI on every push</div>
+     <div class="ln"><span>Payment amounts verified</span><b>PASS</b></div>
+     <div class="ln"><span>Double bookings blocked</span><b>PASS</b></div>
+     <div class="ln"><span>Books balance to the kobo</span><b>PASS</b></div>
+     <div class="ln"><span>Tampering detected</span><b>PASS</b></div>
+     <div class="ln"><span>Uploads checked by bytes</span><b>PASS</b></div>
+     <div class="tot"><span>Tests</span><span>260+ ✓</span></div>
+     <div class="hash">sha256 e9f95fe2 2af92ba5 091f670f</div>
+     <div class="stamp">shipped<br>&amp; live</div>
+   </aside>
+  </div>
+
+  <section id="work">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>Selected work</h2>
+        <p>Each one is live, tested, and comes with a write-up of the decisions behind it. The yellow notes are the part I'd want you to look at.</p>
+      </div>
+
+      <div class="work">
+        <article class="proj reveal">
+          <div class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>oja-ledger.vercel.app</span></div><img src="img/oja.jpg" alt="Oja Ledger dashboard with daily sales, profit, VAT and tax check" loading="lazy" width="1200" height="750"></div></div>
+          <div class="body">
+            <div class="kicker">2026 · Fintech · Own product</div>
+            <h3>Oja Ledger</h3>
+            <p class="what">Offline double-entry bookkeeping for Nigerian traders. Record a sale in two taps with no network, and get profit, VAT returns and the small-company tax check under the Nigeria Tax Act 2025.</p>
+            <div class="hard"><span class="note">the hard part</span>
+              <p>Every entry is sealed with a <b>SHA-256 hash</b> of the one before it, so editing any past naira is detectable. Money is integer kobo, never floats.</p>
+              <p><b>Property-based tests</b> throw 800 random trading histories at the engine on every push and prove the books always balance.</p>
+            </div>
+            <div class="tags"><span>TypeScript</span><span>React</span><span>Tailwind</span><span>IndexedDB</span><span>PWA</span><span>fast-check</span></div>
+            <div class="links"><a class="btn btn-ink btn-sm" href="https://oja-ledger.vercel.app">Try the demo</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/oja-ledger/blob/main/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/oja-ledger">Code</a></div>
+          </div>
+        </article>
+
+        <article class="proj reveal">
+          <div class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>travel-stays.vercel.app</span></div><img src="img/travel.jpg" alt="Travel and Stays home page with search by city and dates" loading="lazy" width="1000" height="523"></div></div>
+          <div class="body">
+            <div class="kicker">Aug – Oct 2026 · Marketplace · MALhub internship</div>
+            <h3>Travel &amp; Stays</h3>
+            <p class="what">A two-sided marketplace for verified stays and local tours across Nigeria, with guests, hosts and tour guides, Paystack payments in naira and an admin dashboard.</p>
+            <div class="hard"><span class="note">the hard part</span>
+              <p>Two guests can't book the same dates, even in the same second: a Postgres <code>exclude using gist</code> constraint makes it impossible.</p>
+              <p>A booking is only marked paid after the server checks with Paystack that the <b>exact amount and currency</b> arrived, covered by 11 unit tests.</p>
+            </div>
+            <div class="tags"><span>React</span><span>Supabase</span><span>PostgreSQL</span><span>Row-level security</span><span>Paystack</span></div>
+            <div class="links"><a class="btn btn-ink btn-sm" href="https://travel-stays.vercel.app">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/travel-stays/blob/master/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/travel-stays">Code</a></div>
+          </div>
+        </article>
+
+        <article class="proj reveal">
+          <div class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>redcart-ten.vercel.app</span></div><img src="img/redcart.jpg" alt="RedCart online store with product categories" loading="lazy" width="1000" height="523"></div></div>
+          <div class="body">
+            <div class="kicker">Dec 2025 – now · E-commerce · Own product</div>
+            <h3>RedCart</h3>
+            <p class="what">An online store with 103 products, Google sign-in, Paystack checkout, review fraud scoring, an AI shopping assistant, and a second storefront in Next.js reading the store's API.</p>
+            <div class="hard"><span class="note">the hard part</span>
+              <p>The AI assistant isn't allowed to guess. Order status and stock come from the database; policy answers come from real documents through a small retrieval layer.</p>
+              <p>Payments are re-checked against the cart total on the server before an order exists. 83 tests run in CI.</p>
+            </div>
+            <div class="tags"><span>Django</span><span>PostgreSQL</span><span>Next.js</span><span>TypeScript</span><span>Groq LLM</span><span>RAG</span></div>
+            <div class="links"><a class="btn btn-ink btn-sm" href="https://redcart-ten.vercel.app">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/Retail-Logistics-Core/blob/main/docs/CASE_STUDY.md">Case study</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/Retail-Logistics-Core">Code</a></div>
+          </div>
+        </article>
+
+        <article class="proj reveal">
+          <div class="shot"><div class="frame"><div class="bar"><i></i><i></i><i></i><span>studyflow-xt1x.onrender.com</span></div><img src="img/studyflow.jpg" alt="StudyFlow student dashboard with tasks and flashcards" loading="lazy" width="1200" height="750"></div></div>
+          <div class="body">
+            <div class="kicker">2026 · EdTech · For FUT Minna students</div>
+            <h3>StudyFlow</h3>
+            <p class="what">A study platform with a 24/7 AI coach that renders maths properly, deadlines and reminders, spaced-repetition flashcards, CBT practice and study groups.</p>
+            <div class="hard"><span class="note">the hard part</span>
+              <p>Uploads are judged by their bytes, not their names: a renamed <code>.exe</code> is rejected by its magic bytes. AI output is sanitised before it touches the page, and AI features are rate-limited per user.</p>
+            </div>
+            <div class="tags"><span>Django</span><span>Python</span><span>Tailwind</span><span>KaTeX</span><span>Groq</span><span>113 tests</span></div>
+            <div class="links"><a class="btn btn-ink btn-sm" href="https://studyflow-xt1x.onrender.com">Visit</a><a class="btn btn-line btn-sm" href="https://github.com/peterafolabi-dev/studyflow">Code</a></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>How I work</h2></div>
+      <div class="princ">
+        <div class="reveal"><h3>Guarantees go in the database</h3><p>If something must never happen, like a double booking or a double payout, I make the database refuse it instead of hoping every code path remembers to check.</p></div>
+        <div class="reveal"><h3>Never trust the browser with money</h3><p>Prices are worked out on the server and every payment is verified with the provider, to the exact amount, before anything is marked paid.</p></div>
+        <div class="reveal"><h3>Write down the why</h3><p>Every project has CI, tests for the parts that matter, and a case study explaining the trade-offs, so the next engineer doesn't have to guess.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap two">
+      <div class="reveal">
+        <h2 style="margin-bottom:28px">Experience</h2>
+        <ol class="time">
+          <li><div class="when">Dec 2025 – now</div><h3>Full-stack developer, freelance</h3><p>Designing, building and shipping my own products end to end: Oja Ledger, RedCart and StudyFlow.</p></li>
+          <li><div class="when">Aug – Oct 2026</div><h3>Software engineering intern, MALhub</h3><p>Built Travel &amp; Stays with the engineering team in Ilorin: payments, verification and booking logic, shipped through Git workflows and code reviews.</p></li>
+          <li><div class="when">Jul 2026 – now</div><h3>Customer support and sales, Tools by FK</h3><p>Helping students and professionals choose and set up AI and digital tools. It taught me to explain technical things simply.</p></li>
+          <li><div class="when">2024 – 2028</div><h3>B.Eng. Computer Engineering, FUT Minna</h3><p>CGPA 3.79/5.00. Software engineering, OOP in Python, database design, data structures.</p></li>
+        </ol>
+      </div>
+      <div class="reveal">
+        <h2 style="margin-bottom:28px">Toolbox</h2>
+        <div class="stack">
+          <span>Python<b>Django</b></span><span>TypeScript</span><span>React<b>Next.js</b></span><span>PostgreSQL</span><span>Supabase</span><span>Tailwind CSS</span><span>REST APIs</span><span>Paystack</span><span>LLM APIs<b>RAG</b></span><span>Git &amp; GitHub Actions</span><span>Vercel<b>Render</b></span><span>Testing<b>property-based</b></span>
+        </div>
+        <p style="margin-top:22px;color:var(--ink-soft)">Open to <b>junior full-stack, frontend or backend roles</b>, remote or in Nigeria, and freelance builds for startups and small businesses.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="contact reveal" id="contact">
+      <span class="scrawl">let's build it ✦</span>
+      <h2>Got a project or a role in mind?</h2>
+      <p>Tell me what you're building. I reply within a day, and I'm happy to walk you through any of the code above.</p>
+      <div class="cta">
+        <a class="btn btn-ink" href="mailto:afolabiprosper329@gmail.com?subject=Hello%20Peter">afolabiprosper329@gmail.com</a>
+        <a class="btn btn-line" href="https://www.linkedin.com/in/afolabipeter-dev">LinkedIn</a>
+        <a class="btn btn-line" href="https://github.com/peterafolabi-dev">GitHub</a>
+      </div>
+    </div>
+    <footer><span>© 2026 Afolabi Peter · Minna, Nigeria</span><span>Hand-built, no template. <a href="https://github.com/peterafolabi-dev/peterafolabi-dev/tree/main/site">Source</a></span></footer>
+  </div>
+</main>
+
+<script>
+  const h = document.querySelector('header')
+  addEventListener('scroll', () => h.classList.toggle('scrolled', scrollY > 8), { passive: true })
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { rootMargin: '0px 0px -8% 0px' }) : null
+  document.querySelectorAll('.reveal').forEach((el) => (io ? io.observe(el) : el.classList.add('in')))
+</script>
+</body>
+</html>

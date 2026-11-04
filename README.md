@@ -1,6 +1,8 @@
 <h1 align="left">Hi 👋, I'm Afolabi Peter</h1>
 <h3 align="left">Full-stack engineer building software that handles money, bookings and trust.</h3>
 
+🌐 **Portfolio: [afolabi-peter.vercel.app](https://afolabi-peter.vercel.app)**
+
 - 🔭 I'm currently building **[Oja Ledger](https://oja-ledger.vercel.app)**, offline tamper-evident bookkeeping for Nigerian traders
 - 🌱 I'm going deeper on **TypeScript, PostgreSQL and testing that proves things** (property-based tests, DB constraints)
 - 👯 I'm looking to collaborate on **fintech, marketplaces and tools for African small businesses**
