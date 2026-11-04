@@ -36,7 +36,7 @@ body::before{content:"";position:fixed;inset:-20% -10% auto auto;width:720px;hei
 a{color:inherit}
 img{max-width:100%;display:block}
 :focus-visible{outline:3px solid var(--red);outline-offset:3px;border-radius:6px}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.w,.fade-in{opacity:1!important;transform:none!important}.receipt .stamp{opacity:1!important;transform:rotate(-14deg)!important}.mark::before{transform:rotate(-1.4deg) skewX(-6deg)!important}}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
 @media (max-width:600px){.wrap{padding:0 16px}}
 
@@ -63,7 +63,7 @@ header.scrolled .nav{box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 18px 40px -
 @media (max-width:720px){.nav nav{display:none}.nav{padding-left:12px}}
 
 /* hero */
-.hero{padding:84px 0 64px;position:relative}
+.hero{padding-top:84px;padding-bottom:64px;position:relative}
 .w{display:inline-block;opacity:0;transform:translateY(.45em);animation:up .8s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes up{to{opacity:1;transform:none}}
 @keyframes swipe{from{transform:rotate(-1.4deg) skewX(-6deg) scaleX(0)}to{transform:rotate(-1.4deg) skewX(-6deg) scaleX(1)}}
@@ -83,7 +83,7 @@ h1{font-weight:800;font-size:clamp(44px,7.4vw,92px);line-height:.98;letter-spaci
 .facts b{display:block;font:600 28px/1 var(--mono);letter-spacing:-.02em}
 .facts span{color:var(--mute);font-size:14px}
 @media (max-width:600px){.facts{grid-template-columns:1fr 1fr}}
-.arrow{position:absolute;left:150px;top:46px;width:120px;color:var(--red);pointer-events:none}
+.arrow{position:absolute;left:300px;top:96px;width:110px;color:var(--red);pointer-events:none}
 @media (max-width:720px){.arrow{display:none}}
 
 /* sections */
@@ -168,13 +168,62 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
 
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
 .reveal.in{opacity:1;transform:none}
+
+/* ---------- photo ---------- */
+.logo img{width:30px;height:30px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--marker)}
+.me{display:flex;align-items:center;gap:16px}
+.avatar{position:relative;width:112px;height:112px;flex:none;animation:bob 5s ease-in-out infinite}
+.avatar img{position:absolute;inset:14px;width:84px;height:84px;border-radius:50%;object-fit:cover;box-shadow:0 10px 24px -10px rgba(40,25,10,.6);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.avatar:hover img{transform:scale(1.06) rotate(-3deg)}
+.avatar svg{position:absolute;inset:0;width:112px;height:112px;animation:spin 18s linear infinite;color:var(--ink)}
+.avatar svg text{font:600 9.6px var(--mono);letter-spacing:.18em;fill:currentColor}
+.avatar .live{position:absolute;right:16px;bottom:16px;width:18px;height:18px;border-radius:50%;background:var(--green);border:3px solid var(--paper)}
+.avatar .live::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--green);animation:ping 2s cubic-bezier(0,0,.2,1) infinite}
+.me .hey{margin:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bob{50%{transform:translateY(-6px)}}
+@keyframes ping{75%,100%{transform:scale(2);opacity:0}}
+.polaroid{float:right;margin:0 0 18px 24px;width:200px;background:#fff;padding:10px 10px 0;border-radius:4px;box-shadow:0 22px 40px -24px rgba(40,25,10,.6),0 0 0 1px rgba(0,0,0,.05);rotate:3deg;transition:rotate .4s cubic-bezier(.2,.8,.2,1),transform .4s}
+.polaroid:hover{rotate:-1deg;transform:translateY(-4px)}
+.polaroid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px}
+.polaroid span{display:block;text-align:center;font:700 22px/1 var(--hand);color:#1C1917;padding:10px 0 12px}
+@media (max-width:600px){.polaroid{width:150px}}
+
+/* ---------- motion ---------- */
+.progress{position:fixed;left:0;top:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--red),var(--marker));z-index:50}
+.marquee{overflow:hidden;border-block:1px solid var(--rule);background:var(--sheet);padding:14px 0;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marquee .track{display:flex;gap:44px;width:max-content;animation:slide 32s linear infinite;font:700 22px/1 var(--display);letter-spacing:-.02em;color:var(--ink-soft)}
+.marquee .track span{display:flex;align-items:center;gap:44px;white-space:nowrap}
+.marquee .track span::after{content:"✦";color:var(--red);font-size:16px}
+.marquee:hover .track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.receipt .ln{opacity:0;transform:translateX(-8px);transition:opacity .4s,transform .4s}
+.receipt .ln b{opacity:0;transform:scale(1.8);display:inline-block;transition:opacity .25s,transform .35s cubic-bezier(.3,1.6,.5,1)}
+.receipt.run .ln{opacity:1;transform:none}
+.receipt.run .ln b{opacity:1;transform:none}
+.receipt .stamp{opacity:0;transform:rotate(-14deg) scale(2.2)}
+.receipt.run .stamp{animation:thump .5s 1.9s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes thump{to{opacity:1;transform:rotate(-14deg) scale(1)}}
+.shot{will-change:transform}
+.stage .lbl i{animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.35}}
+.reveal.in .tags span{animation:pop .45s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.9)}}
+.time li{opacity:0;transform:translateX(-10px);transition:opacity .5s,transform .5s}
+.reveal.in .time li{opacity:1;transform:none}
+.hard .note{animation:wiggle 4s ease-in-out infinite}
+@keyframes wiggle{0%,86%,100%{rotate:0deg}90%{rotate:-4deg}95%{rotate:3deg}}
+.blob{position:fixed;width:420px;height:420px;border-radius:50%;left:0;top:0;pointer-events:none;z-index:-1;background:radial-gradient(circle,color-mix(in srgb,var(--red) 10%,transparent),transparent 65%);filter:blur(20px);transform:translate(-50%,-50%);transition:opacity .4s;opacity:0}
+@media (hover:none){.blob{display:none}}
 </style>
 </head>
 <body>
+<div class="progress" aria-hidden="true"></div>
+<div class="blob" aria-hidden="true"></div>
 
 <header id="top">
   <div class="wrap nav">
-    <a class="logo" href="#top"><i>P</i>Afolabi Peter</a>
+    <a class="logo" href="#top"><img src="img/peter-sm.webp" alt="" width="30" height="30">Afolabi Peter</a>
     <nav aria-label="Main"><a href="#work">Work</a><a href="#how">Approach</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
     <a class="btn btn-line btn-sm" href="Afolabi-Peter-CV.pdf" download>Download CV</a>
   </div>
@@ -183,7 +232,14 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
 <main>
   <div class="wrap hero hero-grid">
    <div>
-    <span class="hey">hey, I'm Peter</span>
+    <div class="me fade-in" style="animation-delay:0s">
+      <div class="avatar">
+        <svg viewBox="0 0 112 112" aria-hidden="true"><defs><path id="ring" d="M56 56m-49 0a49 49 0 1 1 98 0a49 49 0 1 1-98 0"/></defs><text><textPath href="#ring">OPEN TO WORK · JUNIOR ROLES · FREELANCE ·</textPath></text></svg>
+        <img src="img/peter.webp" alt="Afolabi Peter" width="84" height="84">
+        <span class="live" title="Available"></span>
+      </div>
+      <span class="hey">hey, I'm Peter</span>
+    </div>
     <svg class="arrow" viewBox="0 0 120 60" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M4 10c40-10 80 2 104 34"/><path d="M92 40l17 6-3-18"/></svg>
     <h1><span class="w" style="animation-delay:0ms">I</span> <span class="w" style="animation-delay:60ms">build</span> <span class="w" style="animation-delay:120ms">software</span> <span class="w" style="animation-delay:180ms">people</span> <span class="w" style="animation-delay:240ms">trust</span> <span class="w" style="animation-delay:300ms">with</span> <span class="w" style="animation-delay:360ms"><span class="mark">their money.</span></span></h1>
     <p class="lede fade-in" style="animation-delay:.55s">Full-stack engineer in Nigeria. I make the parts that can't afford to be wrong: payments verified on the server, double bookings the database itself refuses, and books that can't go out of balance by a single kobo.</p>
@@ -198,9 +254,9 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
       <a class="chip" href="https://studyflow-xt1x.onrender.com"><span class="dot"></span>StudyFlow is live</a>
     </div>
     <div class="facts">
-      <div><b>260+</b><span>automated tests across my apps</span></div>
-      <div><b>5</b><span>repos with CI on every push</span></div>
-      <div><b>3.79</b><span>CGPA, Computer Eng.</span></div>
+      <div><b data-count="260" data-suffix="+">260+</b><span>automated tests across my apps</span></div>
+      <div><b data-count="5">5</b><span>repos with CI on every push</span></div>
+      <div><b data-count="3.79" data-dec="2">3.79</b><span>CGPA, Computer Eng.</span></div>
     </div>
    </div>
    <aside class="receipt fade-in" style="animation-delay:.9s" aria-label="What my code guarantees">
@@ -215,6 +271,13 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
      <div class="hash">sha256 e9f95fe2 2af92ba5 091f670f</div>
      <div class="stamp">shipped<br>&amp; live</div>
    </aside>
+  </div>
+
+  <div class="marquee" aria-label="What I work with">
+    <div class="track">
+      <span>Python</span><span>Django</span><span>TypeScript</span><span>React</span><span>Next.js</span><span>PostgreSQL</span><span>Supabase</span><span>Paystack</span><span>Tailwind CSS</span><span>GitHub Actions</span><span>Property-based tests</span>
+      <span aria-hidden="true">Python</span><span aria-hidden="true">Django</span><span aria-hidden="true">TypeScript</span><span aria-hidden="true">React</span><span aria-hidden="true">Next.js</span><span aria-hidden="true">PostgreSQL</span><span aria-hidden="true">Supabase</span><span aria-hidden="true">Paystack</span><span aria-hidden="true">Tailwind CSS</span><span aria-hidden="true">GitHub Actions</span><span aria-hidden="true">Property-based tests</span>
+    </div>
   </div>
 
   <section id="work">
@@ -270,7 +333,7 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
             </div>
             <div>
               <div class="hard"><span class="note">the hard part</span><p>The AI assistant isn't allowed to guess. Order status and stock come from the database; policy answers come from real documents through a small retrieval layer.</p>
-              <p>Payments are re-checked against the cart total on the server before an order exists. 83 tests run in CI.</p></div>
+              <p>Payments are re-checked against the cart total on the server before an order exists. 94 tests run in CI.</p></div>
               <div class="tags"><span>Django</span><span>PostgreSQL</span><span>Next.js</span><span>TypeScript</span><span>Groq LLM</span><span>RAG</span></div>
             </div>
           </div>
@@ -287,7 +350,7 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
             </div>
             <div>
               <div class="hard"><span class="note">the hard part</span><p>Uploads are judged by their bytes, not their names: a renamed <code>.exe</code> is rejected by its magic bytes. AI output is sanitised before it touches the page, and AI features are rate-limited per user.</p></div>
-              <div class="tags"><span>Django</span><span>Python</span><span>Tailwind</span><span>KaTeX</span><span>Groq</span><span>113 tests</span></div>
+              <div class="tags"><span>Django</span><span>Python</span><span>Tailwind</span><span>KaTeX</span><span>Groq</span><span>128 tests</span></div>
             </div>
           </div>
         </article>
@@ -309,6 +372,7 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
   <section id="about">
     <div class="wrap two">
       <div class="reveal">
+        <figure class="polaroid"><img src="img/peter.webp" alt="Afolabi Peter smiling, wearing a black cap" width="180" height="180" loading="lazy"><span>that's me, Minna 🇳🇬</span></figure>
         <h2 style="margin-bottom:28px">Experience</h2>
         <ol class="time">
           <li><div class="when">Dec 2025 – now</div><h3>Full-stack developer, freelance</h3><p>Designing, building and shipping my own products end to end: Oja Ledger, RedCart and StudyFlow.</p></li>
@@ -350,6 +414,45 @@ footer{padding:0 0 40px;color:var(--mute);font-size:14px;display:flex;justify-co
   addEventListener('scroll', () => h.classList.toggle('scrolled', scrollY > 8), { passive: true })
   const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { rootMargin: '0px 0px -8% 0px' }) : null
   document.querySelectorAll('.reveal').forEach((el) => (io ? io.observe(el) : el.classList.add('in')))
+
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  // scroll progress bar
+  const bar = document.querySelector('.progress')
+  const onScroll = () => { const m = document.documentElement.scrollHeight - innerHeight; bar.style.transform = `scaleX(${m > 0 ? scrollY / m : 0})` }
+  addEventListener('scroll', onScroll, { passive: true }); onScroll()
+
+  // numbers count up
+  const count = (el) => {
+    const end = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0), suf = el.dataset.suffix || '', t0 = performance.now(), dur = 1400
+    const tick = (t) => { const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3); el.textContent = (end * e).toFixed(dec) + (p === 1 ? suf : ''); p < 1 && requestAnimationFrame(tick) }
+    requestAnimationFrame(tick)
+  }
+  if (!calm) setTimeout(() => document.querySelectorAll('[data-count]').forEach(count), 900)
+
+  // receipt: lines tick through, then the stamp lands
+  const rc = document.querySelector('.receipt')
+  if (rc) {
+    rc.querySelectorAll('.ln').forEach((l, i) => { l.style.transitionDelay = 1.0 + i * 0.16 + 's'; l.querySelector('b').style.transitionDelay = 1.15 + i * 0.16 + 's' })
+    setTimeout(() => rc.classList.add('run'), calm ? 0 : 50)
+  }
+
+  // stagger list items inside revealed blocks
+  document.querySelectorAll('.time li').forEach((li, i) => (li.style.transitionDelay = i * 0.12 + 's'))
+  document.querySelectorAll('.tags').forEach((t) => t.querySelectorAll('span').forEach((s, i) => (s.style.animationDelay = 0.25 + i * 0.05 + 's')))
+
+  // gentle 3D tilt on project screenshots, and a soft glow that follows the pointer
+  if (!calm && matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.proj').forEach((p) => {
+      const s = p.querySelector('.shot')
+      p.addEventListener('mousemove', (e) => { const r = p.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5; s.style.transform = `perspective(1100px) rotateY(${x * 5}deg) rotateX(${-y * 4}deg) translateY(0)` })
+      p.addEventListener('mouseleave', () => (s.style.transform = ''))
+    })
+    const blob = document.querySelector('.blob'); let bx = 0, by = 0, tx = 0, ty = 0
+    addEventListener('pointermove', (e) => { tx = e.clientX; ty = e.clientY; blob.style.opacity = 1 }, { passive: true })
+    const follow = () => { bx += (tx - bx) * 0.08; by += (ty - by) * 0.08; blob.style.left = bx + 'px'; blob.style.top = by + 'px'; requestAnimationFrame(follow) }
+    follow()
+  }
 </script>
 </body>
 </html>
