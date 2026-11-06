@@ -6,7 +6,7 @@
 
 I'm a full-stack developer in Minna, Nigeria, and a Computer Engineering student at FUT Minna (CGPA 3.79/5). I like the unglamorous parts that make an app safe to depend on: checking payments on the server, letting the database refuse bad data, and writing tests that prove the numbers add up.
 
-**Portfolio:** [afolabi-peter.vercel.app](https://afolabi-peter.vercel.app) · **Email:** afolabiprosper329@gmail.com · **LinkedIn:** [afolabipeter-dev](https://www.linkedin.com/in/afolabipeter-dev)
+**Portfolio:** [afolabi-peter.vercel.app](https://afolabi-peter.vercel.app) · **Email:** afolabiprosper329@gmail.com · **LinkedIn:** [Afolabi Peter](https://www.linkedin.com/in/afolabi-peter-953669391)
 
 **Open to** junior full-stack, frontend or backend roles (remote or in Nigeria) and freelance builds for small businesses.
 
