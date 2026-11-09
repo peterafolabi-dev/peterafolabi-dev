@@ -49,7 +49,7 @@ export const DRUM_IDS = ['kick', 'snare', 'clap', 'hat', 'ohat', 'conga', 'shake
 export function toState(r) {
   const len = r.len;
   const pad = a => { const o = a.slice(0, len); while (o.length < len) o.push(0); return o; };
-  const parseMel = s => { const p = n(s || ''); const o = p.slice(0, len); while (o.length < len) o.push(null); return o; };
+  const parseMel = s => { if (!s || !s.trim()) return Array(len).fill(null); const p = n(s); const o = p.slice(0, len); while (o.length < len) o.push(null); return o; };
   return {
     id: r.id, name: r.name, bpm: r.bpm, swing: r.swing, length: len, div: r.div, root: r.root, scaleName: r.scale,
     tracks: DRUM_IDS.map(id => ({ id, steps: pad(d(r.drums[id] || '')), vol: 1, mute: false })),
