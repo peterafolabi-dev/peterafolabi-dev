@@ -3,6 +3,7 @@
 <title>SONARA — a music studio made of code</title>
 <meta name="description" content="A browser music studio. Every sound is synthesised live: 39 rhythms from Afrobeat to techno, a step sequencer, song arranger, music theory and an ear trainer. No audio files.">
 <meta name="theme-color" content="#0b0a10">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0a10'/%3E%3Cpath d='M6 16h3l3-9 4 18 4-14 2 5h4' stroke='%23ff6a3d' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head><body>
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -12,7 +13,7 @@
 <div class="libh">Your library</div>
 <div class="lib" id="lib"></div>
 <div class="sideeq" id="sideeq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></aside>
-<div class="mainwrap"><header class="top"><div class="srch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Search 39 rhythms, regions, styles" aria-label="Search rhythms"></div><a class="btn ghost sm" id="shareTop" href="#/studio">Open studio</a></header>
+<div class="mainwrap"><header class="top"><div class="srch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Search 39 rhythms, regions, styles" aria-label="Search rhythms"></div><div class="sys" id="sys" aria-live="off"><i class="led" id="sysLed"></i><span id="sysT">AUDIO IDLE</span><span class="mono" id="sysB">--- BPM</span><span class="mono" id="sysS">00/00</span></div><a class="btn ghost sm" id="shareTop" href="#/studio">Open studio</a></header>
 <main id="app"></main>
 <footer class="foot">SONARA · every sound synthesised in your browser · no samples, no downloads</footer></div>
 </div>
@@ -20,7 +21,7 @@
 <div class="pbar" id="pbar" role="region" aria-label="Player">
 <button class="pinfo" id="pOpen" aria-label="Open now playing"><span class="pcov" id="pCov"></span><span class="ptxt"><b id="pTitle">Pick a groove</b><small id="pSub">Press play</small></span></button>
 <div class="pmid"><div class="pctl"><button class="pbtn" id="pPrev" aria-label="Previous rhythm"><svg viewBox="0 0 24 24"><path d="M6 5v14M19 5l-9 7 9 7z"/></svg></button><button class="pplay" id="mini" aria-label="Play or stop"></button><button class="pbtn" id="pNext" aria-label="Next rhythm"><svg viewBox="0 0 24 24"><path d="M18 5v14M5 5l9 7-9 7z"/></svg></button></div><div class="pdots" id="pDots"></div></div>
-<div class="pright"><span class="peq" id="peq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><input type="range" id="pVol" min="0" max="1" step="0.01" value="0.8" aria-label="Volume"><button class="pbtn" id="pExp" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
+<div class="pright"><span class="peq" id="peq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="ledbpm" aria-label="Tempo"><b id="pBpm">---</b><small>BPM</small></span><input type="range" id="pVol" min="0" max="1" step="0.01" value="0.8" aria-label="Volume"><button class="pbtn" id="pExp" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
 <div class="pprog" id="pProg"><i></i></div></div>
 <div class="np" id="np" aria-hidden="true"><div class="npbg" id="npbg"></div>
 <div class="npc"><button class="npx" id="npX" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -28,4 +29,5 @@
 <div class="npctl"><button class="pplay big" id="npPlay" aria-label="Play or stop"></button><label class="f">Tempo <input type="range" id="npBpm" min="50" max="200" value="100"></label><span class="meta" id="npBpmV"></span></div></div>
 <div class="npr"><div class="chips" id="npModes"></div><div class="lanes" id="lanes"></div></div></div></div></div>
 <script type="module" src="/src/main.js"></script>
+<div class="drawer" id="drawer" aria-hidden="true"><div class="dback" data-close></div><div class="dsheet" role="dialog" aria-label="Explore"><div class="dgrip"></div><h3>Explore</h3><div class="dgrid" id="dgrid"></div></div></div>
 </body></html>

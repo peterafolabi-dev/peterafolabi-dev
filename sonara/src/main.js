@@ -53,14 +53,21 @@ const ICON = {
   home: '<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>', studio: '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9v6M12 7v10M16 11v2"/>', rhythms: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/>',
   arranger: '<path d="M4 6h10M4 12h16M4 18h12"/><circle cx="18" cy="6" r="2"/><circle cx="20" cy="18" r="2"/>', learn: '<path d="M3 8l9-4 9 4-9 4zM7 10v5c3 2 7 2 10 0v-5"/>', theory: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>', lab: '<path d="M10 3h4M11 3v6l-6 10a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-6-10V3"/>', about: '<circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/>',
 };
-const NAV = [['', 'Home', 'home'], ['studio', 'Studio', 'studio'], ['rhythms', 'Rhythms', 'rhythms'], ['arranger', 'Arranger', 'arranger'], ['learn', 'Learn', 'learn'], ['theory', 'Theory', 'theory'], ['lab', 'Sound lab', 'lab'], ['about', 'About', 'about']];
+const NAV = [['', 'Home', 'home'], ['studio', 'Studio', 'studio'], ['rhythms', 'Rhythms', 'rhythms'], ['arranger', 'Arranger', 'arranger'], ['explore', 'Explore', 'lab']];
+const EXPLORE = [['learn', 'Learn', 'Ten short lessons with live examples', 'learn'], ['theory', 'Theory', 'Scales, chords and an ear trainer', 'theory'], ['lab', 'Sound lab', 'Nine voices and drum pads', 'lab'], ['about', 'About', 'How it is built and photo credits', 'about']];
+const EXP_PAGES = EXPLORE.map(e => e[0]).concat('explore');
 $('#nav').innerHTML = NAV.map(([h, l, i]) => `<a href="#/${h}"><svg viewBox="0 0 24 24">${ICON[i]}</svg><span>${l}</span></a>`).join('');
-$('#tabs').innerHTML = NAV.filter(n => n[0] !== 'about').map(([h, l, i]) => `<a href="#/${h}"><svg viewBox="0 0 24 24">${ICON[i]}</svg><span>${l}</span></a>`).join('');
+$('#tabs').innerHTML = NAV.map(([h, l, i]) => `<a href="#/${h}"><svg viewBox="0 0 24 24">${ICON[i]}</svg><span>${l}</span></a>`).join('');
+const drawer = $('#drawer');
+$('#dgrid').innerHTML = EXPLORE.map(([h, l, d, i]) => `<a href="#/${h}" data-dg><svg viewBox="0 0 24 24">${ICON[i]}</svg><b>${l}</b><small>${d}</small></a>`).join('');
+const openDrawer = o => { drawer.classList.toggle('open', o); drawer.setAttribute('aria-hidden', !o); };
+document.addEventListener('click', e => { const x = e.target.closest('a[href="#/explore"]'); if (x) { e.preventDefault(); openDrawer(!drawer.classList.contains('open')); return; } if (e.target.closest('[data-close],[data-dg]')) openDrawer(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') openDrawer(false); });
 const PLAY_SVG = '<svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>', PAUSE_SVG = '<svg viewBox="0 0 24 24"><path d="M8 4v16M16 4v16" stroke-width="5"/></svg>';
 const recents = () => { try { return JSON.parse(localStorage.getItem('sonara.recent')) || []; } catch { return []; } };
 function pushRecent(id) { try { const r = [id, ...recents().filter(x => x !== id)].slice(0, 6); localStorage.setItem('sonara.recent', JSON.stringify(r)); } catch {} drawLib(); }
 const curMeta = () => RHYTHMS.find(r => r.id === S.id);
-function applyTheme() { const h = hueOf(S.id || 'new'); document.documentElement.style.setProperty('--h', h); vz.setHue(h); }
+function applyTheme() { const h = 168 + hueOf(S.id || 'new') % 112; document.documentElement.style.setProperty('--h', h); vz.setHue(h); }
 function drawLib() {
   const items = recents().map(id => RHYTHMS.find(r => r.id === id)).filter(Boolean);
   $('#lib').innerHTML = (song.length ? `<button data-go="arranger"><span class="t" style="display:grid;place-items:center;background:var(--card2)">♫</span><span><b>Your song</b><small>${song.length} section${song.length > 1 ? 's' : ''}</small></span></button>` : '') + items.map(r => `<button data-play="${r.id}"><span class="t">${cover(r.id, '', { noText: true })}</span><span><b>${r.name}</b><small>${r.region}</small></span></button>`).join('') || '<div class="meta" style="padding:6px 12px">Play a rhythm and it shows up here.</div>';
@@ -75,11 +82,12 @@ function updatePlayer() {
   $('#npCov').innerHTML = cover(S.id || 'new', S.name); $('#npT').textContent = S.name; $('#npS').textContent = m ? `${m.region} · ${m.tag}` : 'Your own pattern';
   $('#npD').textContent = m ? m.blurb : 'Built in the studio. Open it there to keep editing.'; $('#npBpm').value = S.bpm; $('#npBpmV').textContent = S.bpm + ' BPM';
   $('#lanes').innerHTML = [...S.tracks.map(t => ({ n: DRUMS.find(d => d.id === t.id).name, c: DRUMS.find(d => d.id === t.id).color, s: t.steps.map(v => v ? 1 : 0) })), { n: 'Bass', c: '#ff6a3d', s: S.bass.steps.map(v => v != null ? 1 : 0) }, { n: 'Lead', c: '#8a7bff', s: S.lead.steps.map(v => v != null ? 1 : 0) }].filter(l => l.s.some(Boolean)).map(l => `<div class="ln"><span>${l.n}</span><div class="lc" style="grid-template-columns:repeat(${S.length},1fr);--c:${l.c}">${l.s.map(v => `<i class="${v ? 'on' : ''}"></i>`).join('')}</div></div>`).join('');
-  applyTheme(); updatePlayState();
+  $('#pBpm').textContent = S.bpm; $('#sysB').textContent = S.bpm + ' BPM'; applyTheme(); updatePlayState();
 }
 function updatePlayState() {
   const on = engine.playing;
   for (const b of [$('#mini'), $('#npPlay')]) { b.innerHTML = on ? PAUSE_SVG : PLAY_SVG; b.classList.toggle('on', on); b.setAttribute('aria-label', on ? 'Stop' : 'Play'); }
+  $('#sysT').textContent = on ? 'LIVE · ' + (S.name || '').toUpperCase().slice(0, 18) : 'AUDIO IDLE'; $('#sysLed').classList.toggle('on', on); document.body.classList.toggle('live', on);
   $('#np').classList.toggle('play', on); const pb = $('#playBtn'); if (pb) { pb.textContent = on ? '■ Stop' : '▶ Play'; pb.classList.toggle('on', on); }
   $$('.alb').forEach(a => a.classList.toggle('playing', on && a.dataset.id === S.id));
   if (!on) { $$('.st.play,.pdots i.now,.lc i.now').forEach(e => e.classList.remove('now', 'play')); $('#pProg i').style.width = '0'; }
@@ -87,6 +95,7 @@ function updatePlayState() {
 engine.on(i => {
   updatePlayState();
   if (i != null && engine.playing) {
+    $('#sysS').textContent = String(i + 1).padStart(2, '0') + '/' + String(S.length).padStart(2, '0');
     $$('.st.play,.pdots i.now,.lc i.now').forEach(e => e.classList.remove('now', 'play'));
     $$(`.st[data-i="${i}"]`).forEach(e => e.classList.add('play'));
     const d = $$('#pDots i')[i]; if (d) d.classList.add('now'); $$('.lc').forEach(l => { const c = l.children[i]; if (c) c.classList.add('now'); });
@@ -106,6 +115,8 @@ $$('#npModes .chip').forEach(c => c.onclick = () => { $$('#npModes .chip').forEa
 /* equaliser bars driven by the analyser */
 const eqs = [...$$('#sideeq i'), ...$$('#peq i')];
 (function eqLoop() { requestAnimationFrame(eqLoop); const lv = engine.levels(); const play = engine.playing && lv; eqs.forEach((el, k) => { const n = el.parentElement.children.length, idx = k % n; const v = play ? lv[2 + idx * 5] / 255 : 0.05 + 0.04 * Math.sin(performance.now() / 600 + idx); el.style.height = Math.max(6, v * 100) + '%'; }); })();
+/* UI tick: a tiny synthesised click on controls, only once audio has been started */
+document.addEventListener('pointerdown', e => { if (!engine.ctx || engine.ctx.state !== 'running' || !e.target.closest('.chip,.tabs a,#nav a,.tile,[data-dg],.stat')) return; try { engine.drum('hat', engine.ctx.currentTime + .002, .3); } catch {} });
 /* delegated: ripple on buttons, 3D tilt on cards */
 document.addEventListener('pointerdown', e => { const b = e.target.closest('.btn'); if (!b) return; const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height), s = document.createElement('span'); s.className = 'rip'; s.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`; b.appendChild(s); setTimeout(() => s.remove(), 650); });
 document.addEventListener('pointermove', e => { if (REDUCE || e.pointerType === 'touch') return; const c = e.target.closest('.alb,.tile,.npcov'); $$('.tilt').forEach(x => { if (x !== c) { x.style.transform = ''; x.classList.remove('tilt'); } }); if (!c) return; const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; c.classList.add('tilt'); c.style.transform = `perspective(700px) rotateX(${-y * 9}deg) rotateY(${x * 11}deg) translateZ(6px)`; });
@@ -142,8 +153,8 @@ const pages = {
     const hr = new Date().getHours(), greet = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
     app.innerHTML = `<section class="hero2"><div class="txt"><span class="tag">${greet}, a music studio made of code</span><h1>Make music from <span>nothing.</span></h1>
 <p class="lead">Every drum, bass note and melody is synthesised live in your browser. No samples, no downloads. Play ${RHYTHMS.length} rhythms, rebuild them, record them.</p>
-<div class="btns"><button class="btn" id="hp">${PLAY_SVG.replace('<svg', '<svg width="18" height="18" fill="#111" stroke="#111"')} Play something</button><a class="btn ghost" href="#/studio">Open the studio</a><a class="btn ghost" href="#/arranger">Build a song</a></div>
-<div class="hstats"><div><b data-count="${RHYTHMS.length}">0</b><span>rhythms</span></div><div><b data-count="${DRUMS.length + 7}">0</b><span>instruments</span></div><div><b data-count="${Object.keys(SCALES).length}">0</b><span>scales</span></div><div><b data-count="0">0</b><span>audio files</span></div></div></div>
+<div class="engage"><a class="engbtn" id="engage" href="#/studio"><span class="ring"></span><span class="core"><svg viewBox="0 0 24 24"><path d="M12 3v9M6.5 6.5a8 8 0 1 0 11 0"/></svg></span><span class="lbl"><b>ENGAGE STUDIO</b><small>Open the sequencer</small></span></a><button class="rand" id="hp" aria-label="Play a random groove">${PLAY_SVG}<span>Random groove</span></button></div>
+<div class="rack">${[[RHYTHMS.length, 'RHYTHMS', 'rhythms'], [DRUMS.length + 7, 'INSTRUMENTS', 'lab'], [Object.keys(SCALES).length, 'SCALES', 'theory'], [0, 'AUDIO FILES', 'about']].map(([n, l, h], i) => `<a class="stat" href="#/${h}" style="--d:${i * 0.12}s"><span class="scr"><b data-count="${n}">0</b></span><small>${l}</small><i class="vu"></i></a>`).join('')}</div></div>
 <div class="machine"><div id="padbox"></div><div class="mhint"><i></i>Drag to spin · tap the pads to play</div></div></section>
 <h2 style="margin-top:10px">Quick picks</h2><div class="quick rv">${RHYTHMS.slice(0, 8).map(r => `<button class="qk" data-id="${r.id}"><span class="t">${cover(r.id, '', { noText: true })}</span>${r.name}<span class="pl">${PLAY_SVG}</span></button>`).join('')}</div>
 ${shelf('Made in Africa', 'West, Central and Southern Africa', by(r => africa.test(r.region)))}
@@ -165,17 +176,21 @@ ${shelf('Rolling 12/8', 'Every beat splits into three', by(r => r.div === 3))}
     if (padsOff) { padsOff(); padsOff = null; }
     const pads = pbox && initPads(pbox, { onHit: i => { if (i < 8) { applyFx(); engine.drum(PD[i], ctxTime() + .005, 1.15); } else { const sc = SCALES[S.scaleName] || SCALES['Natural minor'] || [0, 2, 3, 5, 7, 8, 10]; note(S.root + 60 + sc[(i - 8) % sc.length] + 12 * Math.floor((i - 8) / sc.length), 'kalimba'); } }, labels: i => i < 8 ? [DRUMS[i].name, 'drum pad'] : [noteName((S.root + 60 + (SCALES[S.scaleName] || [0, 2, 3, 5, 7, 8, 10])[(i - 8) % 7]) % 12), 'kalimba note'] });
     if (pads) {
-      pads.setHue(hueOf(pick.id)); pads.idle(S.name || 'SONARA', 'tap the pads');
+      pads.setHue(168 + hueOf(pick.id) % 112); pads.idle(S.name || 'SONARA', 'tap the pads');
       const off = engine.on(i => { if (!pbox.isConnected) { off(); return; } if (i == null || !engine.playing) { pads.idle(S.name || 'SONARA', 'tap the pads'); return; } const L = S.length, set = []; S.tracks.forEach(t => { const k = PD.indexOf(t.id); if (k >= 0 && t.steps[i % L] && !t.mute) set.push(k); }); pads.setStep(i, set, S.name); });
       padsOff = () => { off(); pads.destroy(); };
     }
     if (spinOff) { spinOff(); spinOff = null; }
     const sb = $('#spinbox'), sp = sb && initSpin(sb, d => { const e = $('#degv'); if (e) e.textContent = d; });
-    if (sp) { sp.setHue(hueOf(pick.id)); spinOff = () => sp.destroy(); $$('#vbtns [data-v]').forEach(b => b.onclick = () => sp.view(b.dataset.v)); }
+    if (sp) { sp.setHue(168 + hueOf(pick.id) % 112); spinOff = () => sp.destroy(); $$('#vbtns [data-v]').forEach(b => b.onclick = () => sp.view(b.dataset.v)); }
     $$('.sp').forEach(b => b.onclick = () => { const k = STORY[+b.dataset.s][3], dr = {}; DRUMS.forEach(d => dr[d.id] = k.includes(d.id) ? STORY_ROWS[d.id] : ''); const st = toState({ id: 'story', name: 'Build: ' + STORY[+b.dataset.s][0], bpm: 112, len: 16, div: 4, swing: 0, drums: dr, bass: +b.dataset.s === 3 ? '0 . . . . . 0 . 3 . . . 2 . . .' : '', lead: '', root: 0, scale: 'Natural minor' }); S = { ...st, progIdx: S.progIdx, chords: { on: false, list: [] } }; songPos = null; engine.stop(); engine.start(cur); applyFx(); updatePlayer(); updatePlayState(); });
     bindAlbums(); $('#hp').onclick = () => { if (engine.playing) { engine.stop(); updatePlayState(); } else playRhythm(RHYTHMS[Math.floor(Math.random() * RHYTHMS.length)]); };
     $$('[data-count]').forEach(el => { const to = +el.dataset.count; if (REDUCE || !to) { el.textContent = to; return; } const o = { v: 0 }; gsap.to(o, { v: to, duration: 1.4, ease: 'power2.out', onUpdate: () => { el.textContent = Math.round(o.v); } }); });
     updatePlayState();
+  },
+  explore() {
+    viz.setHome(false);
+    app.innerHTML = `<h2>Explore</h2><p class="lead">Learn the language, play the instruments, see how it is built.</p><div class="tiles">${EXPLORE.map(([h, l, d, i], k) => `<a class="tile" href="#/${h}" style="--x:${k * 70 + 20}"><h3>${l}</h3><p>${d}</p><svg viewBox="0 0 24 24">${ICON[i]}</svg></a>`).join('')}</div>`;
   },
   studio() {
     viz.setHome(false); updatePlayer(); const s = S;
@@ -317,7 +332,7 @@ addEventListener('keydown', e => {
 });
 function route() {
   const p = (location.hash.replace(/^#\/?/, '') || 'home').split('?')[0].split('/')[0], page = pages[p] ? p : 'home';
-  $$('#nav a,#tabs a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#/' + (page === 'home' ? '' : page)));
+  $$('#nav a,#tabs a').forEach(a => { const hh = a.getAttribute('href'); a.classList.toggle('on', hh === '#/' + (page === 'home' ? '' : page) || (hh === '#/explore' && EXP_PAGES.includes(page))); }); openDrawer(false);
   if (page === 'studio') { const q = location.hash.split('?p=')[1]; if (q) { try { const o = JSON.parse(decodeURIComponent(escape(atob(q)))); if (o && o.tracks && o.length) { S = o; save(); } } catch {} history.replaceState(null, '', '#/studio'); } }
   window.__rq = null; if (page !== 'home') { if (padsOff) { padsOff(); padsOff = null; } if (spinOff) { spinOff(); spinOff = null; } } pages[page](); scrollTo(0, 0); updatePlayer(); drawLib(); enter(); document.title = (page === 'home' ? 'SONARA — a music studio made of code' : `${page[0].toUpperCase() + page.slice(1)} · SONARA`);
 }
