@@ -1,0 +1,13 @@
+/* Short lessons. Each has a demo: a rhythm id to load, or a scale/chord to play. */
+export const LESSONS = [
+  { t: 'The beat and the step', body: 'Music is built on a steady pulse. The studio divides each beat into 4 steps (16th notes), so a 16-step row is one bar of 4 beats. Count it "1 e & a, 2 e & a…". Kick on 1, 2, 3, 4 gives four-on-the-floor.', demo: { rhythm: 'house' } },
+  { t: 'Backbeat: where the snare lives', body: 'Most pop, rock and hip-hop puts the snare or clap on beats 2 and 4 (steps 5 and 13). That off-balance accent is what makes people nod along.', demo: { rhythm: 'pop' } },
+  { t: 'Swing', body: 'Swing delays every second 16th note so the groove feels looser and rolls instead of marching. Boom bap and lo-fi use a lot; techno uses none. Try the Swing slider while a pattern plays.', demo: { rhythm: 'lofi' } },
+  { t: 'Syncopation and 3+3+2', body: 'Grouping 8 steps as 3+3+2 puts accents off the main beats. The dembow pattern behind dancehall and reggaeton, and many Afrobeats kicks, lean on this shape.', demo: { rhythm: 'dancehall' } },
+  { t: 'Polyrhythm and 12/8', body: 'In 12/8, each beat splits into three, not four. Layer a bell, shakers and drums that each repeat on different cycles and you get the interlocking feel of many West African rhythms.', demo: { rhythm: 'bembe' } },
+  { t: 'Major and minor', body: 'The only difference between a major and a minor triad is one note: the third. Major has 4 semitones from the root to the third (bright); minor has 3 (darker). Play both in the chord builder.', demo: { chord: 'Major' } },
+  { t: 'Why pentatonic is forgiving', body: 'A pentatonic scale has five notes and leaves out the two that clash most. Almost any order of those notes sounds acceptable, which is why it shows up in blues, rock and pop toplines.', demo: { scale: 'Minor pentatonic' } },
+  { t: 'Modes: same notes, new home', body: 'Dorian is a minor scale with a raised 6th, which gives it a warmer, funkier sound. It is common in Afrobeat, funk and lo-fi. Mixolydian is major with a flat 7th, relaxed and bluesy, common in highlife and rock.', demo: { scale: 'Dorian' } },
+  { t: 'Bass and kick lock together', body: 'The bass usually plays on or near the kick, and holds the root note of the chord. When they hit together the groove feels heavy; when the bass answers between kicks it feels bouncy.', demo: { rhythm: 'funk' } },
+  { t: 'Building a loop that lasts', body: 'Start with kick and snare, add hats for energy, add percussion for flavour, then a bass line, then a short melody that repeats. Leave space; what you leave out matters as much as what you add.', demo: { rhythm: 'afrobeats' } },
+];

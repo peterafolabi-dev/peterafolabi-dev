@@ -3,6 +3,7 @@ import { engine, DRUMS, mtof } from './audio.js';
 import { RHYTHMS, toState, emptyState } from './rhythms.js';
 import { SCALES, SCALE_FEEL, CHORDS, PROGRESSIONS, NOTES, noteName, diatonicChord, INTERVALS, INTERVAL_SONGS } from './theory.js';
 import { initViz } from './viz.js';
+import { LESSONS } from './lessons.js';
 
 const $ = (s, el = document) => el.querySelector(s), $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const app = $('#app'), viz = initViz($('#bg'));
@@ -69,7 +70,7 @@ ${[['Studio', 'studio', 'A 10-track step sequencer with swing, key, scale, effec
 <label class="f">Scale <select id="scale">${opts(Object.keys(SCALES).map(k => [k, k]), s.scaleName)}</select></label>
 <label class="f">Preset <select id="preset"><option value="">Choose…</option>${opts(RHYTHMS.map(r => [r.id, r.name]), '')}</select></label>
 <label class="f">Lead <select id="lkind"><option value="pluck">Pluck</option><option value="soft">Soft</option></select></label>
-<button class="btn ghost sm" id="clear">Clear</button><button class="btn ghost sm" id="rec">● Record</button></div>
+<button class="btn ghost sm" id="clear">Clear</button><button class="btn ghost sm" id="rec">● Record</button><button class="btn ghost sm" id="share">Copy share link</button></div>
 <div class="panel"><div class="seq" id="seq"></div></div>
 <div class="panel bar"><label class="f"><span><input type="checkbox" id="chon"> Chord pad</span><select id="prog">${opts(PROGRESSIONS.map((p, i) => [i, p[0]]), s.progIdx)}</select></label>
 ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reverb', 'Reverb', 0, 0.8, 0.01], ['volume', 'Volume', 0, 1, 0.01]].map(([k, l, a, b, st]) => `<label class="f">${l}<input type="range" data-fx="${k}" min="${a}" max="${b}" step="${st}" value="${fx[k]}"></label>`).join('')}</div>
@@ -85,6 +86,7 @@ ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reve
     $('#preset').onchange = e => { const r = RHYTHMS.find(x => x.id === e.target.value); if (r) { S = { ...toState(r), progIdx: S.progIdx, chords: { on: S.chords.on, list: [] } }; save(); pages.studio(); } };
     $('#clear').onclick = () => { const n = emptyState(); S = { ...n, bpm: S.bpm, root: S.root, scaleName: S.scaleName, progIdx: S.progIdx }; save(); pages.studio(); };
     $$('[data-fx]').forEach(e => e.oninput = () => { fx[e.dataset.fx] = +e.value; applyFx(); });
+    $('#share').onclick = async () => { const u = location.origin + location.pathname + '#/studio?p=' + btoa(unescape(encodeURIComponent(JSON.stringify(S)))); try { await navigator.clipboard.writeText(u); $('#msg').textContent = 'Link copied. Anyone who opens it gets your pattern.'; } catch { prompt('Copy this link', u); } };
     let recording = false;
     $('#rec').onclick = async () => {
       if (!recording) { if (!engine.playing) toggle(); engine.record(); recording = true; $('#rec').textContent = '■ Stop & save'; $('#rec').classList.add('rec'); }
@@ -136,6 +138,12 @@ ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reve
     $$('[data-d]').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); applyFx(); engine.drum(b.dataset.d, ctxTime() + .005, 1.1); }));
     labKind = () => kind;
   },
+  learn() {
+    viz.setHome(false);
+    app.innerHTML = `<h2>Learn</h2><p class="lead">Ten short lessons. Each one plays a real example you can then open and edit.</p><div class="grid">${LESSONS.map((l, i) => `<div class="card"><span class="tag">Lesson ${i + 1}</span><h3>${l.t}</h3><p>${l.body}</p><div class="btns"><button class="btn sm" data-l="${i}">▶ Hear it</button>${l.demo.rhythm ? `<button class="btn ghost sm" data-lo="${i}">Open in studio</button>` : `<a class="btn ghost sm" href="#/theory">Open in theory</a>`}</div></div>`).join('')}</div>`;
+    $$('[data-l]').forEach(b => b.onclick = () => { const d = LESSONS[+b.dataset.l].demo; if (d.rhythm) playRhythm(RHYTHMS.find(r => r.id === d.rhythm)); else { const t = ctxTime() + .05; applyFx(); if (d.scale) [...SCALES[d.scale], 12].forEach((i, k) => engine.lead(t + k * .28, 62 + i, .4)); else engine.chord(t, CHORDS[d.chord].map(i => 60 + i), 1.4); } });
+    $$('[data-lo]').forEach(b => b.onclick = () => { const r = RHYTHMS.find(x => x.id === LESSONS[+b.dataset.lo].demo.rhythm); S = { ...toState(r), progIdx: S.progIdx, chords: { on: false, list: [] } }; save(); location.hash = '#/studio'; });
+  },
   about() {
     viz.setHome(false);
     app.innerHTML = `<h2>About SONARA</h2><p class="lead">A showpiece built to prove that a browser alone is enough to make music.</p>
@@ -149,13 +157,14 @@ let labKind = () => 'pluck';
 function renderSeq() {
   const s = S, drumById = Object.fromEntries(DRUMS.map(d => [d.id, d]));
   const rows = [...s.tracks.map(t => ({ k: 'd', t, name: drumById[t.id].name, color: drumById[t.id].color })), { k: 'm', t: s.bass, name: 'Bass', color: '#ff6a3d', which: 'bass' }, { k: 'm', t: s.lead, name: 'Lead', color: '#8a7bff', which: 'lead' }];
-  $('#seq').innerHTML = rows.map((r, ri) => `<div class="row"><div class="rl"><button data-m="${ri}" class="${r.t.mute ? 'm' : ''}">M</button>${r.name}</div><div class="steps" style="grid-template-columns:repeat(${s.length},1fr);grid-auto-flow:row">${r.t.steps.map((v, i) => `<button class="st ${v != null && (r.k === 'm' || v !== 0) ? 'on' : ''} ${v === 2 ? 'acc' : ''}" data-r="${ri}" data-i="${i}" style="--c:${r.color}" aria-label="${r.name} step ${i + 1}">${r.k === 'm' && v != null ? v + 1 : ''}</button>`).join('')}</div></div>`).join('');
+  $('#seq').innerHTML = rows.map((r, ri) => `<div class="row"><div class="rl"><button data-m="${ri}" class="${r.t.mute ? 'm' : ''}">M</button>${r.name}<input type="range" class="vol" data-v="${ri}" min="0" max="1.5" step="0.05" value="${r.t.vol}" aria-label="${r.name} volume"></div><div class="steps" style="grid-template-columns:repeat(${s.length},1fr);grid-auto-flow:row">${r.t.steps.map((v, i) => `<button class="st ${v != null && (r.k === 'm' || v !== 0) ? 'on' : ''} ${v === 2 ? 'acc' : ''}" data-r="${ri}" data-i="${i}" style="--c:${r.color}" aria-label="${r.name} step ${i + 1}">${r.k === 'm' && v != null ? v + 1 : ''}</button>`).join('')}</div></div>`).join('');
   $$('.st').forEach(b => b.onclick = () => {
     const r = rows[+b.dataset.r], i = +b.dataset.i;
     if (r.k === 'd') { r.t.steps[i] = (r.t.steps[i] + 1) % 3; if (r.t.steps[i]) { applyFx(); engine.drum(r.t.id, ctxTime() + .005, r.t.steps[i] === 2 ? 1.2 : .8); } }
     else { const v = r.t.steps[i]; r.t.steps[i] = v == null ? 0 : v >= 6 ? null : v + 1; if (r.t.steps[i] != null) { const sc = SCALES[S.scaleName], d = r.t.steps[i], oct = r.which === 'bass' ? 2 : 4; const m = S.root + 12 * (oct + 1) + sc[d % sc.length] + 12 * Math.floor(d / sc.length); applyFx(); r.which === 'bass' ? engine.bass(ctxTime() + .005, m, .4) : engine.lead(ctxTime() + .005, m, .5, 1, S.lead.kind); } }
     const v = r.t.steps[i]; b.className = 'st' + (v != null && (r.k === 'm' || v !== 0) ? ' on' : '') + (v === 2 ? ' acc' : ''); if (r.k === 'm') b.textContent = v != null ? v + 1 : ''; save();
   });
+  $$('.vol').forEach(e => e.oninput = () => { rows[+e.dataset.v].t.vol = +e.value; save(); });
   $$('[data-m]').forEach(b => b.onclick = () => { const r = rows[+b.dataset.m]; r.t.mute = !r.t.mute; b.classList.toggle('m', r.t.mute); save(); });
 }
 function toast(t) { const m = $('#msg'); if (m) m.textContent = t; }
@@ -167,8 +176,9 @@ addEventListener('keydown', e => {
   const k = KEYMAP[e.key.toLowerCase()]; if (k != null) note(60 + k, /lab/.test(h) ? labKind() : 'pluck');
 });
 function route() {
-  const p = (location.hash.replace(/^#\/?/, '') || 'home').split('/')[0], page = pages[p] ? p : 'home';
+  const p = (location.hash.replace(/^#\/?/, '') || 'home').split('?')[0].split('/')[0], page = pages[p] ? p : 'home';
   $$('#nav a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#/' + page));
+  if (page === 'studio') { const q = location.hash.split('?p=')[1]; if (q) { try { const o = JSON.parse(decodeURIComponent(escape(atob(q)))); if (o && o.tracks && o.length) { S = o; save(); } } catch {} history.replaceState(null, '', '#/studio'); } }
   pages[page](); scrollTo(0, 0); document.title = (page === 'home' ? 'SONARA — a music studio made of code' : `${page[0].toUpperCase() + page.slice(1)} · SONARA`);
 }
 addEventListener('hashchange', route); route();

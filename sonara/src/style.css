@@ -50,3 +50,4 @@ input[type=range]{accent-color:var(--ac);width:120px}
 kbd{background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12px}
 @media(max-width:860px){.hero{min-height:70vh;background:linear-gradient(90deg,#0b0a10cc,transparent)}nav{order:3;width:100%;margin-left:0}.mini{margin-left:auto}.top{flex-wrap:wrap;gap:8px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+.vol{width:52px;margin-left:auto}.rl{min-width:0}.row{grid-template-columns:150px 1fr}
