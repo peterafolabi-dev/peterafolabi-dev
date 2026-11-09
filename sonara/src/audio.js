@@ -95,11 +95,24 @@ class Engine {
     this.out(g, 0.03); o1.start(t); o2.start(t); o1.stop(t + dur + 0.05); o2.stop(t + dur + 0.05);
   }
   lead(t, midi, dur, v = 1, kind = 'pluck') {
+    if (kind === 'organ' || kind === 'square' || kind === 'bell' || kind === 'pad') return this.voice(t, midi, dur, v, kind);
     const c = this.ctx, f = mtof(midi), g = c.createGain(), lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 2;
     lp.frequency.setValueAtTime(Math.min(12000, f * 9), t); lp.frequency.exponentialRampToValueAtTime(Math.max(300, f * 2), t + dur);
     for (const det of [-6, 6]) { const o = c.createOscillator(); o.type = kind === 'pluck' ? 'sawtooth' : 'triangle'; o.frequency.value = f; o.detune.value = det; o.connect(lp); o.start(t); o.stop(t + dur + 0.1); }
     lp.connect(g); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.2 * v, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     this.out(g, 0.4);
+  }
+  voice(t, midi, dur, v, kind) {
+    const c = this.ctx, f = mtof(midi), g = c.createGain(), lp = c.createBiquadFilter(); lp.type = 'lowpass';
+    let parts, a = 0.01, rel = 0.1, peak = 0.16 * v;
+    if (kind === 'organ') { parts = [['sine', 1, 1], ['sine', 2, 0.6], ['sine', 3, 0.35], ['sine', 4, 0.2]]; lp.frequency.value = 5000; peak = 0.12 * v; }
+    else if (kind === 'square') { parts = [['square', 1, 1], ['square', 2.003, 0.3]]; lp.frequency.value = 2600; peak = 0.1 * v; }
+    else if (kind === 'bell') { parts = [['sine', 1, 1], ['sine', 2.76, 0.5], ['sine', 5.4, 0.25], ['sine', 8.93, 0.12]]; lp.frequency.value = 9000; dur = Math.max(dur, 1.2); rel = dur; peak = 0.14 * v; }
+    else { parts = [['sawtooth', 1, 1], ['sawtooth', 1.004, 1], ['triangle', 0.5, 0.8]]; lp.frequency.value = 1400; a = 0.25; rel = 0.5; dur = Math.max(dur, 0.9); peak = 0.09 * v; }
+    for (const [type, mul, amp] of parts) { const o = c.createOscillator(), og = c.createGain(); o.type = type; o.frequency.value = f * mul; og.gain.value = amp / parts.length * 2; o.connect(og); og.connect(lp); o.start(t); o.stop(t + dur + rel + 0.05); }
+    lp.connect(g); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + a);
+    if (kind === 'bell') g.gain.exponentialRampToValueAtTime(0.0001, t + dur); else { g.gain.setValueAtTime(peak, t + Math.max(a, dur * 0.7)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + rel); }
+    this.out(g, 0.45);
   }
   kalimba(t, midi, v = 1) { const f = mtof(midi); this.tone(t, 'sine', f, f, 0.9, 0.35 * v, 0.5); this.tone(t, 'sine', f * 4.1, f * 4.1, 0.15, 0.1 * v, 0.5); }
   chord(t, midis, dur, v = 1) {
@@ -116,9 +129,10 @@ class Engine {
   }
   stop() { clearInterval(this.timer); this.playing = false; this.step = 0; this.emit(); }
   tick() {
-    const s = this.getState(), div = s.div || 4, stepDur = 60 / s.bpm / div, ahead = this.ctx.currentTime + 0.14;
-    this.setTempoSync(s.bpm);
+    const ahead = this.ctx.currentTime + 0.14;
     while (this.nextTime < ahead) {
+      const s = this.getState(this.step), div = s.div || 4, stepDur = 60 / s.bpm / div;
+      this.setTempoSync(s.bpm);
       const i = this.step % s.length, swing = (i % 2 === 1 && div === 4) ? s.swing * stepDur * 0.5 : 0, t = this.nextTime + swing;
       this.playStep(s, i, t, stepDur);
       const delay = Math.max(0, (t - this.ctx.currentTime) * 1000);

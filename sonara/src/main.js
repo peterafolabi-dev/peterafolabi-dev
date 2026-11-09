@@ -12,16 +12,32 @@ let S = load() || toState(RHYTHMS[0]); S.progIdx = S.progIdx ?? 0;
 let fx = { cutoff: 12000, delay: 0.15, reverb: 0.2, volume: 0.8 };
 function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }
-function cur() {
-  const scale = SCALES[S.scaleName] || SCALES['Minor pentatonic'];
-  const prog = PROGRESSIONS[S.progIdx] || PROGRESSIONS[0];
+function resolve(X) {
+  const scale = SCALES[X.scaleName] || SCALES['Minor pentatonic'];
+  const prog = PROGRESSIONS[X.progIdx ?? 0] || PROGRESSIONS[0];
   const list = prog[1].map(d => diatonicChord(0, SCALES[prog[3] === 'minor' ? 'Natural minor' : 'Major'], d));
-  return { ...S, scale, chords: { on: S.chords.on, list } };
+  return { ...X, scale, chords: { on: X.chords.on, list } };
 }
+const cur = () => resolve(S);
+/* song mode */
+let song = (() => { try { return JSON.parse(localStorage.getItem('sonara.song')) || []; } catch { return []; } })();
+let songPos = null, songLoop = true;
+const saveSong = () => { try { localStorage.setItem('sonara.song', JSON.stringify(song)); } catch {} };
+function songState(step) {
+  if (!song.length) return cur();
+  if (songPos.last === -1 || (step === 0 && songPos.last !== 0 && songPos.started)) {
+    if (songPos.started) { songPos.bar++; if (songPos.bar >= song[songPos.i].bars) { songPos.bar = 0; songPos.i++; if (songPos.i >= song.length) { if (songLoop) songPos.i = 0; else { songPos.done = true; songPos.i = 0; } } } }
+  }
+  songPos.started = true; songPos.last = step;
+  const it = song[songPos.i]; setTimeout(() => emitSong(), 0); return resolve(it.pat);
+}
+let emitSong = () => { $$('.sg').forEach(e => e.classList.toggle('now', songPos && +e.dataset.i === songPos.i)); if (songPos && songPos.done) { songStop(); } };
+function songPlay() { if (!song.length) return; engine.stop(); songPos = { i: 0, bar: 0, last: -1, started: false, done: false }; engine.start(songState); applyFx(); }
+function songStop() { engine.stop(); songPos = null; $$('.sg').forEach(e => e.classList.remove('now')); const b = $('#songBtn'); if (b) b.textContent = '▶ Play song'; }
 const ctxTime = () => { engine.init(); return engine.ctx.currentTime; };
 function applyFx() { engine.init(); engine.setFx(fx); }
-function toggle() { if (engine.playing) engine.stop(); else { engine.start(cur); applyFx(); } }
-function playRhythm(r) { S = { ...toState(r), progIdx: S.progIdx, chords: { on: false, list: [] } }; save(); engine.stop(); engine.start(cur); applyFx(); }
+function toggle() { songPos = null; if (engine.playing) engine.stop(); else { engine.start(cur); applyFx(); } }
+function playRhythm(r) { S = { ...toState(r), progIdx: S.progIdx, chords: { on: false, list: [] } }; save(); songPos = null; engine.stop(); engine.start(cur); applyFx(); }
 function note(midi, kind = 'pluck') {
   const t = ctxTime() + 0.005; applyFx();
   if (kind === 'kalimba') engine.kalimba(t, midi); else if (kind === 'bass') engine.bass(t, midi - 12, 0.6); else if (kind === 'chord') engine.chord(t, [midi, midi + 4, midi + 7], 1.2); else engine.lead(t, midi, 0.7, 1, kind);
@@ -55,9 +71,9 @@ const pages = {
     app.innerHTML = `<section class="hero"><span class="tag">A music studio made of code</span><h1>Make music from <span>nothing.</span></h1>
 <p class="lead">Every drum, bass note and melody here is synthesised live in your browser. No samples, no downloads. Pick a rhythm, change it, learn why it works, record it.</p>
 <div class="btns"><button class="btn" id="hp">▶ Hear it</button><a class="btn ghost" href="#/studio">Open the studio</a><a class="btn ghost" href="#/rhythms">Browse rhythms</a></div>
-<div class="stats"><div><b>${RHYTHMS.length}</b><span>rhythms</span></div><div><b>${DRUMS.length + 2}</b><span>instruments</span></div><div><b>${Object.keys(SCALES).length}</b><span>scales</span></div><div><b>0</b><span>audio files</span></div></div></section>
+<div class="stats"><div><b>${RHYTHMS.length}</b><span>rhythms</span></div><div><b>${DRUMS.length + 7}</b><span>instruments</span></div><div><b>${Object.keys(SCALES).length}</b><span>scales</span></div><div><b>0</b><span>audio files</span></div></div></section>
 <h2>What's inside</h2><div class="grid">
-${[['Studio', 'studio', 'A 10-track step sequencer with swing, key, scale, effects and recording.'], ['Rhythms', 'rhythms', '24 grooves from Afrobeat and Amapiano to techno, each with a short honest note on where it comes from.'], ['Theory', 'theory', 'Scales, chords, progressions and an ear trainer you can play along with.'], ['Sound lab', 'lab', 'A playable keyboard, drum pads and live filter, delay and reverb.']].map(c => `<a class="card" style="text-decoration:none;color:inherit" href="#/${c[1]}"><h3>${c[0]}</h3><p>${c[2]}</p><span class="tag">Open →</span></a>`).join('')}</div>`;
+${[['Studio', 'studio', 'A 10-track step sequencer with mixer, swing, key, scale, effects, tap tempo, share links and recording.'], ['Rhythms', 'rhythms', `${RHYTHMS.length} grooves from Afrobeat and Amapiano to techno, each with a short honest note on where it comes from.`], ['Theory', 'theory', 'Scales, chords, progressions and an ear trainer you can play along with.'], ['Arranger', 'arranger', 'Chain patterns into a full song, then record it.'], ['Learn', 'learn', 'Ten short lessons with examples you can open and edit.'], ['Sound lab', 'lab', 'Nine playable voices, drum pads and live filter, delay and reverb.']].map(c => `<a class="card" style="text-decoration:none;color:inherit" href="#/${c[1]}"><h3>${c[0]}</h3><p>${c[2]}</p><span class="tag">Open →</span></a>`).join('')}</div>`;
     $('#hp').onclick = () => { playRhythm(RHYTHMS[Math.floor(Math.random() * RHYTHMS.length)]); toast(`Playing: ${S.name}`); };
   },
   studio() {
@@ -69,8 +85,8 @@ ${[['Studio', 'studio', 'A 10-track step sequencer with swing, key, scale, effec
 <label class="f">Key <select id="root">${rootOpts(s.root)}</select></label>
 <label class="f">Scale <select id="scale">${opts(Object.keys(SCALES).map(k => [k, k]), s.scaleName)}</select></label>
 <label class="f">Preset <select id="preset"><option value="">Choose…</option>${opts(RHYTHMS.map(r => [r.id, r.name]), '')}</select></label>
-<label class="f">Lead <select id="lkind"><option value="pluck">Pluck</option><option value="soft">Soft</option></select></label>
-<button class="btn ghost sm" id="clear">Clear</button><button class="btn ghost sm" id="rec">● Record</button><button class="btn ghost sm" id="share">Copy share link</button></div>
+<label class="f">Lead <select id="lkind"><option value="pluck">Pluck</option><option value="soft">Soft</option><option value="organ">Organ</option><option value="square">Chip square</option><option value="bell">Bell</option><option value="pad">Pad</option></select></label>
+<button class="btn ghost sm" id="clear">Clear</button><button class="btn ghost sm" id="rec">● Record</button><button class="btn ghost sm" id="share">Copy share link</button><button class="btn ghost sm" id="tap">Tap tempo</button><button class="btn ghost sm" id="addsong">+ Add to song</button></div>
 <div class="panel"><div class="seq" id="seq"></div></div>
 <div class="panel bar"><label class="f"><span><input type="checkbox" id="chon"> Chord pad</span><select id="prog">${opts(PROGRESSIONS.map((p, i) => [i, p[0]]), s.progIdx)}</select></label>
 ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reverb', 'Reverb', 0, 0.8, 0.01], ['volume', 'Volume', 0, 1, 0.01]].map(([k, l, a, b, st]) => `<label class="f">${l}<input type="range" data-fx="${k}" min="${a}" max="${b}" step="${st}" value="${fx[k]}"></label>`).join('')}</div>
@@ -87,6 +103,8 @@ ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reve
     $('#clear').onclick = () => { const n = emptyState(); S = { ...n, bpm: S.bpm, root: S.root, scaleName: S.scaleName, progIdx: S.progIdx }; save(); pages.studio(); };
     $$('[data-fx]').forEach(e => e.oninput = () => { fx[e.dataset.fx] = +e.value; applyFx(); });
     $('#share').onclick = async () => { const u = location.origin + location.pathname + '#/studio?p=' + btoa(unescape(encodeURIComponent(JSON.stringify(S)))); try { await navigator.clipboard.writeText(u); $('#msg').textContent = 'Link copied. Anyone who opens it gets your pattern.'; } catch { prompt('Copy this link', u); } };
+    let taps = []; $('#tap').onclick = () => { const n = performance.now(); taps = taps.filter(x => n - x < 2500); taps.push(n); if (taps.length > 1) { const iv = (taps[taps.length - 1] - taps[0]) / (taps.length - 1); S.bpm = Math.max(50, Math.min(200, Math.round(60000 / iv))); $('#bpm').value = S.bpm; save(); } };
+    $('#addsong').onclick = () => { song.push({ name: S.name, bars: 2, pat: JSON.parse(JSON.stringify(S)) }); saveSong(); $('#msg').textContent = `Added "${S.name}" to your song (${song.length} section${song.length > 1 ? 's' : ''}). Open Arranger to edit.`; };
     let recording = false;
     $('#rec').onclick = async () => {
       if (!recording) { if (!engine.playing) toggle(); engine.record(); recording = true; $('#rec').textContent = '■ Stop & save'; $('#rec').classList.add('rec'); }
@@ -130,13 +148,34 @@ ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reve
   lab() {
     viz.setHome(false); let kind = 'pluck';
     app.innerHTML = `<h2>Sound lab</h2><p class="lead">Play it yourself. Pick a voice, shape it with the filter, echo and reverb.</p>
-<div class="panel"><div class="chips" id="kinds">${[['pluck', 'Pluck'], ['soft', 'Soft'], ['kalimba', 'Kalimba'], ['bass', 'Bass'], ['chord', 'Chord']].map(([k, l], i) => `<button class="chip${i ? '' : ' on'}" data-k="${k}">${l}</button>`).join('')}</div>${piano(0, [], 'lp', 48, 21)}<p class="meta">Computer keyboard: <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>F</kbd> <kbd>G</kbd> <kbd>H</kbd> <kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd> play C to D, with <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> for sharps.</p></div>
+<div class="panel"><div class="chips" id="kinds">${[['pluck', 'Pluck'], ['soft', 'Soft'], ['organ', 'Organ'], ['square', 'Chip square'], ['bell', 'Bell'], ['pad', 'Pad'], ['kalimba', 'Kalimba'], ['bass', 'Bass'], ['chord', 'Chord']].map(([k, l], i) => `<button class="chip${i ? '' : ' on'}" data-k="${k}">${l}</button>`).join('')}</div>${piano(0, [], 'lp', 48, 21)}<p class="meta">Computer keyboard: <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>F</kbd> <kbd>G</kbd> <kbd>H</kbd> <kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd> play C to D, with <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> for sharps.</p></div>
 <div class="panel bar">${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reverb', 'Reverb', 0, 0.8, 0.01], ['volume', 'Volume', 0, 1, 0.01]].map(([k, l, a, b, st]) => `<label class="f">${l}<input type="range" data-fx="${k}" min="${a}" max="${b}" step="${st}" value="${fx[k]}"></label>`).join('')}</div>
 <div class="panel"><h3>Drum pads</h3><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(110px,1fr));margin-top:10px">${DRUMS.map(d => `<button class="btn" data-d="${d.id}" style="background:${d.color};border-radius:var(--r);padding:22px 8px">${d.name}</button>`).join('')}</div></div>`;
     bindPiano('lp', () => kind); $$('#kinds .chip').forEach(c => c.onclick = () => { $$('#kinds .chip').forEach(x => x.classList.remove('on')); c.classList.add('on'); kind = c.dataset.k; });
     $$('[data-fx]').forEach(e => e.oninput = () => { fx[e.dataset.fx] = +e.value; applyFx(); });
     $$('[data-d]').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); applyFx(); engine.drum(b.dataset.d, ctxTime() + .005, 1.1); }));
     labKind = () => kind;
+  },
+  arranger() {
+    viz.setHome(false);
+    const draw = () => {
+      app.innerHTML = `<h2>Arranger</h2><p class="lead">Chain patterns into a full song. Add sections from the Studio ("+ Add to song") or from any rhythm below, set how many bars each plays, and press play.</p>
+<div class="panel bar"><button class="btn" id="songBtn">${songPos ? '■ Stop' : '▶ Play song'}</button><label class="f"><span><input type="checkbox" id="loop"${songLoop ? ' checked' : ''}> Loop</span></label><label class="f">Add preset <select id="addp"><option value="">Choose…</option>${opts(RHYTHMS.map(r => [r.id, r.name]), '')}</select></label><button class="btn ghost sm" id="rec2">● Record song</button><button class="btn ghost sm" id="clrs">Clear song</button><span class="meta" id="tot"></span></div>
+<div id="sl">${song.length ? '' : '<div class="card"><p>Your song is empty. Pick a preset above to start.</p></div>'}${song.map((it, i) => `<div class="panel sg" data-i="${i}"><div class="bar"><b>${i + 1}. ${it.name}</b><span class="meta">${it.pat.bpm} BPM</span><label class="f">Bars <input type="number" min="1" max="16" value="${it.bars}" data-b="${i}" style="width:64px"></label><button class="btn ghost sm" data-u="${i}">↑</button><button class="btn ghost sm" data-d="${i}">↓</button><button class="btn ghost sm" data-e="${i}">Edit in studio</button><button class="btn ghost sm" data-x="${i}">Remove</button></div></div>`).join('')}</div><div class="msg" id="msg"></div>`;
+      const tot = () => { const secs = song.reduce((a, it) => a + it.bars * it.pat.length / (it.pat.div || 4) * 60 / it.pat.bpm * (it.pat.div === 3 ? 1 : 1), 0); $('#tot').textContent = song.length ? `Length about ${Math.floor(secs / 60)}:${String(Math.round(secs % 60)).padStart(2, '0')}` : ''; }; tot();
+      $('#songBtn').onclick = () => { if (songPos) songStop(); else { songPlay(); $('#songBtn').textContent = '■ Stop'; } };
+      $('#loop').onchange = e => { songLoop = e.target.checked; };
+      $('#addp').onchange = e => { const r = RHYTHMS.find(x => x.id === e.target.value); if (r) { song.push({ name: r.name, bars: 4, pat: toState(r) }); saveSong(); draw(); } };
+      $('#clrs').onclick = () => { songStop(); song = []; saveSong(); draw(); };
+      $$('[data-b]').forEach(e => e.onchange = () => { song[+e.dataset.b].bars = Math.max(1, Math.min(16, +e.value || 1)); saveSong(); tot(); });
+      $$('[data-x]').forEach(b => b.onclick = () => { song.splice(+b.dataset.x, 1); saveSong(); songStop(); draw(); });
+      $$('[data-u]').forEach(b => b.onclick = () => { const i = +b.dataset.u; if (i > 0) { [song[i - 1], song[i]] = [song[i], song[i - 1]]; saveSong(); draw(); } });
+      $$('[data-d]').forEach(b => b.onclick = () => { const i = +b.dataset.d; if (i < song.length - 1) { [song[i + 1], song[i]] = [song[i], song[i + 1]]; saveSong(); draw(); } });
+      $$('[data-e]').forEach(b => b.onclick = () => { S = JSON.parse(JSON.stringify(song[+b.dataset.e].pat)); S.progIdx = S.progIdx ?? 0; save(); location.hash = '#/studio'; });
+      let rec = false; $('#rec2').onclick = async () => { if (!rec) { if (!song.length) return; songLoop = false; $('#loop').checked = false; songPlay(); $('#songBtn').textContent = '■ Stop'; engine.record(); rec = true; $('#rec2').textContent = '■ Stop & save'; $('#rec2').classList.add('rec'); } else { const b = await engine.stopRecord(); rec = false; songStop(); $('#rec2').textContent = '● Record song'; $('#rec2').classList.remove('rec'); if (b) { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'sonara-song.webm'; a.click(); $('#msg').textContent = 'Saved your song as a .webm audio file.'; } } };
+      emitSong();
+    };
+    draw();
   },
   learn() {
     viz.setHome(false);
@@ -150,7 +189,7 @@ ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reve
 <div class="grid"><div class="card"><h3>No audio files</h3><p>Kicks are sine sweeps, snares and hats are filtered noise, bass and leads are oscillators, reverb is generated noise. All of it runs through the Web Audio API.</p></div>
 <div class="card"><h3>Honest rhythms</h3><p>The patterns are simplified teaching versions that show each style's character. They are not transcriptions of specific songs.</p></div>
 <div class="card"><h3>Stack</h3><p>Vanilla JavaScript, Web Audio, three.js for the visualiser, Vite. Your work is saved in your own browser.</p></div></div>
-<p class="meta" style="margin-top:24px">Built by Afolabi Peter. A first milestone: more instruments, a song arranger and a larger lesson library are planned.</p>`;
+<p class="meta" style="margin-top:24px">Built by Afolabi Peter. Includes a step sequencer, song arranger, 10 lessons, theory tools and a sound lab.</p>`;
   },
 };
 let labKind = () => 'pluck';
