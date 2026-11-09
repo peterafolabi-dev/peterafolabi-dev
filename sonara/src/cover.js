@@ -3,7 +3,9 @@ let uid = 0;
 export function hash(str) { let h = 2166136261; for (const c of String(str)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 export const hueOf = id => hash(id) % 360;
+const PHOTOS = new Set(['afrohouse', 'afrobeat', 'juju', 'bembe', 'highlife', 'amapiano', 'lofi', 'afrobeats']);
 export function cover(id, name = '', opts = {}) {
+  if (PHOTOS.has(id)) return `<img class="cv" src="/img/${id}.jpg" alt="" loading="lazy" draggable="false" style="object-fit:cover">`;
   const s = hash(id), r = rng(s), h = s % 360, h2 = (h + 40 + (s >> 3) % 80) % 360, g = 'g' + (uid++), style = (s >> 5) % 6;
   let art = '';
   if (style === 0) for (let i = 0; i < 7; i++) art += `<circle cx="${70 + r() * 60}" cy="${60 + r() * 50}" r="${14 + i * 14}" fill="none" stroke="hsl(${h2} 90% ${60 + i * 3}% / .55)" stroke-width="${2 + r() * 5}"/>`;
