@@ -4,7 +4,20 @@ export function hash(str) { let h = 2166136261; for (const c of String(str)) { h
 function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 export const hueOf = id => hash(id) % 360;
 const PHOTOS = new Set(['afrohouse', 'afrobeat', 'juju', 'bembe', 'highlife', 'amapiano', 'lofi', 'afrobeats']);
+/* Unsplash photos (hotlinked, per Unsplash guidelines). Credits shown on the About page. */
+export const UNSPLASH = {
+  disco: ['photo-1792253796807-3240774a5ab7', 'Joost Crop', 'smallcamerabigpictures', 'LOJ2F1NcDN0'],
+  house: ['photo-1513563326940-e76e4641069e', 'Jehyun Sung', 'jaysung', 'Y3iX41HX6SI'],
+  dnb: ['photo-1645654495749-db9ba5f1ef23', 'Call Me Fred', 'callmefred', '7oK3pbyEy1s'],
+  trap: ['photo-1735617621342-d65d9c552ca1', 'Jay Dee', 'jdharris', 'FNo5zyx9HzM'],
+  reggaeton: ['photo-1625642471723-12744e6e4211', 'Zetong Li', 'zetong', 'Pm8Qaht8kXU'],
+  techno: ['photo-1774296785946-9d4b887b8c91', 'Kris Tian', 'kris_tian', 'FyNNbm2ExBk'],
+  funk: ['photo-1583916602120-795a82087464', 'Severin Stalder', 'severinstalder', '95GsNG4YCi8'],
+  waltz: ['photo-1635476573973-fdb06ca7ad4d', 'Caleb McLean', 'calebmcleanphotography', 'qBbknsDYnLk'],
+};
+const img = (src, extra = '') => `<img class="cvi" src="${src}" alt="" loading="lazy" draggable="false" onerror="this.remove()"${extra}>`;
 export function cover(id, name = '', opts = {}) {
+  if (UNSPLASH[id] && !opts.plain) return `<span class="cvw">${cover(id, name, { ...opts, plain: true })}${img(`https://images.unsplash.com/${UNSPLASH[id][0]}?ixlib=rb-4.1.0&q=80&fm=jpg&fit=crop&crop=entropy&w=640&h=640`)}</span>`;
   if (PHOTOS.has(id)) return `<img class="cv" src="/img/${id}.jpg" alt="" loading="lazy" draggable="false" style="object-fit:cover">`;
   const s = hash(id), r = rng(s), h = s % 360, h2 = (h + 40 + (s >> 3) % 80) % 360, g = 'g' + (uid++), style = (s >> 5) % 6;
   let art = '';

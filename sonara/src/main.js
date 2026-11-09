@@ -3,7 +3,7 @@ import { engine, DRUMS, mtof } from './audio.js';
 import { RHYTHMS, toState, emptyState } from './rhythms.js';
 import { SCALES, SCALE_FEEL, CHORDS, PROGRESSIONS, NOTES, noteName, diatonicChord, INTERVALS, INTERVAL_SONGS } from './theory.js';
 import { initViz, MODES } from './viz.js';
-import { cover, hueOf } from './cover.js';
+import { cover, hueOf, UNSPLASH } from './cover.js';
 import gsap from 'gsap';
 import { LESSONS } from './lessons.js';
 
@@ -262,6 +262,7 @@ ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reve
 <div class="grid"><div class="card"><h3>No audio files</h3><p>Kicks are sine sweeps, snares and hats are filtered noise, bass and leads are oscillators, reverb is generated noise. All of it runs through the Web Audio API.</p></div>
 <div class="card"><h3>Honest rhythms</h3><p>The patterns are simplified teaching versions that show each style's character. They are not transcriptions of specific songs.</p></div>
 <div class="card"><h3>Stack</h3><p>Vanilla JavaScript, Web Audio, three.js for the visualiser, Vite. Your work is saved in your own browser.</p></div></div>
+<h2>Photo credits</h2><p class="meta">Some covers use photos from <a href="https://unsplash.com/?utm_source=sonara&utm_medium=referral" style="color:var(--tx)">Unsplash</a>, used under the Unsplash licence. Others were supplied by the site's author.</p><div class="credits">${Object.entries(UNSPLASH).map(([k, [, by, u, pid]]) => `<span>${RHYTHMS.find(r => r.id === k)?.name || k}: <a href="https://unsplash.com/photos/${pid}?utm_source=sonara&utm_medium=referral">photo</a> by <a href="https://unsplash.com/@${u}?utm_source=sonara&utm_medium=referral">${by}</a></span>`).join('')}</div>
 <p class="meta" style="margin-top:24px">Built by Afolabi Peter. Includes a step sequencer, song arranger, 10 lessons, theory tools and a sound lab.</p>`;
   },
 };
