@@ -109,6 +109,7 @@ export const stage = {
   },
   explode(v) { gsap.to(S, { explode: v, duration: reduce ? 0 : 1.3, ease: 'power3.inOut', overwrite: 'auto' }); },
   spin(on) { S.spin = on ? 1 : 0; },
+  turn() { if (!user.turning) { user.turning = true; user.vel = 0; gsap.to(user, { rotY: user.rotY + Math.PI * 2, duration: reduce ? 0 : 1.8, ease: 'power3.inOut', onComplete: () => { user.turning = false; } }); } },
   scroll(p) { S.sRot = p * Math.PI * 1.4; S.sY = p * 2.2; },
   kick() { gsap.fromTo(bloom, { strength: 1.6 }, { strength: 0.25, duration: 1.1, ease: 'power3.out' }); },
   drag(el) {

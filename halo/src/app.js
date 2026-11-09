@@ -1,5 +1,6 @@
 import { stage } from './stage.js';
 import * as P from './pages.js';
+import { initFx, heroFx } from './fx.js';
 import { PRODUCTS, byId, COLLECTIONS, BUNDLES } from './catalog.js';
 import { ARTICLES } from './journal.js';
 import { $, $$, fmt, esc, store, S, save, FINISHES, thumb, totals, lineUnit, addToCart, inWish, toggleWish, pushRecent, toast, eta, COUPONS, FREE_OVER } from './core.js';
@@ -157,7 +158,7 @@ function route(internal) {
 }
 
 function homeFx() {
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; heroFx();
   const sw = $('#swap');
   if (sw && !reduce) { const w = sw.dataset.w.split('|'); let i = 0; clearInterval(window.__swap); window.__swap = setInterval(() => { if (!document.body.contains(sw)) return clearInterval(window.__swap); sw.classList.add('out'); setTimeout(() => { i = (i + 1) % w.length; sw.textContent = w[i]; sw.classList.remove('out'); }, 350); }, 2200); }
   $$('[data-count]').forEach(el => { const to = +el.dataset.count; if (reduce) { el.textContent = to; return; } const t0 = performance.now(); const tick = t => { const k = Math.min(1, (t - t0) / 1400); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
@@ -297,3 +298,5 @@ addEventListener('scroll', () => { if (!location.hash || location.hash === '#/')
 
 renderBadges(); renderDrawer(); renderCmpBar();
 route(false);
+
+initFx();

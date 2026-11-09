@@ -44,11 +44,17 @@ export function home() {
   const eds = EDITIONS.map(e => ({ e, p: byId('halo-one-' + e.id) || PRODUCTS.find(x => x.edition === e.id) }));
   const mq = ['Free delivery over ' + fmt(FREE_OVER), '30-day returns (concept)', '12-month warranty (concept)', 'Bundle and save up to 10%'];
   return `<section class="hero">
+    <div class="stagefx" aria-hidden="false"><div class="ringbox" id="ringbox"><span class="rl r1"></span><span class="rl r2"></span><span class="rl r3"></span><span class="xh xh1"></span><span class="xh xh2"></span><span class="xh xh3"></span><span class="xh xh4"></span><i class="tk t1"></i><i class="tk t2"></i><i class="tk t3"></i><i class="tk t4"></i>
+      <button class="hs hs1" id="hsExp" data-hs="explode"><i></i><span><small>01</small>Explode view</span></button>
+      <button class="hs hs2" id="hsSpin" data-hs="spin"><i></i><span><small>02</small>360° spin</span></button>
+      <button class="hs hs3" id="hsDrv" data-hs="drivers"><i></i><span><small>03</small>Drivers &amp; soundstage</span></button>
+      <div class="hpop" id="hpop" hidden><b>40 mm drivers · 20 Hz–40 kHz</b><p>Flat first, warm second. Wide, open soundstage from angled drivers (concept spec).</p><div class="sstage"><i></i><i></i><i></i></div></div>
+      <div class="swatches" id="swatches" role="group" aria-label="Colour edition"><button class="sw on" data-e="" style="--c:#ff4500" aria-label="Ember" title="Ember"></button>${EDITIONS.map(e => `<button class="sw" data-e="${e.id}" style="--c:${e.accent}" aria-label="${e.name}" title="${e.name}"></button>`).join('')}</div></div></div>
     <p class="kicker">Concept store · 2026</p>
     <h1><span>HA</span><span>LO</span></h1>
     <p class="lede">Obsessive audio for <b class="swap" id="swap" data-w="headphones|earbuds|speakers|studio gear|turntables">headphones</b>. ${PRODUCTS.length} products you can spin, explode and recolour in 3D.</p>
-    <div class="cta-row"><a class="btn" href="#/shop">Shop the lineup</a><a class="btn ghost" href="#/finder">Find your HALO</a></div>
-    <dl class="hstats"><div><dt data-count="${PRODUCTS.length}">0</dt><dd>products</dd></div><div><dt data-count="${EDITIONS.length}">0</dt><dd>colour editions</dd></div><div><dt data-count="${BUNDLES.length}">0</dt><dd>bundles</dd></div><div><dt data-count="${COLLECTIONS.length}">0</dt><dd>collections</dd></div></dl>
+    <div class="cta-row"><a class="btn pri" href="#/shop"><span>Shop the lineup</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn ghost cur" href="#/finder"><i class="cd"></i><span>Find your HALO</span></a></div>
+    <dl class="hstats"><div class="tele"><dt data-count="${PRODUCTS.length}">0</dt><dd>products</dd><small>SKU // 01</small></div><div class="tele"><dt data-count="${EDITIONS.length}">0</dt><dd>colour editions</dd><small>CLR // 02</small></div><div class="tele"><dt data-count="${BUNDLES.length}">0</dt><dd>bundles</dd><small>SET // 03</small></div><div class="tele"><dt data-count="${COLLECTIONS.length}">0</dt><dd>collections</dd><small>COL // 04</small></div></dl>
     <div class="hint"><span class="dot"></span> Drag to spin · scroll to explore</div>
   </section>
   <div class="solid">
