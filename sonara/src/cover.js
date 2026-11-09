@@ -13,6 +13,9 @@ export const UNSPLASH = {
   reggaeton: ['photo-1625642471723-12744e6e4211', 'Zetong Li', 'zetong', 'Pm8Qaht8kXU'],
   techno: ['photo-1774296785946-9d4b887b8c91', 'Kris Tian', 'kris_tian', 'FyNNbm2ExBk'],
   funk: ['photo-1583916602120-795a82087464', 'Severin Stalder', 'severinstalder', '95GsNG4YCi8'],
+  rock: ['photo-1758176209301-bcb3edd1732e', 'Ruben Zea', '', 'qjX71jCYkCM'],
+  pop: ['photo-1724390265362-c58d0bc7d17a', 'Aditya Sethia', '', 'T0TyVwTLlMA'],
+  ambient: ['photo-1788032769279-eb26f3183e46', 'Krzysztof Kościelny', '', 'KH-sV6pl0Gg'],
   waltz: ['photo-1635476573973-fdb06ca7ad4d', 'Caleb McLean', 'calebmcleanphotography', 'qBbknsDYnLk'],
 };
 const img = (src, extra = '') => `<img class="cvi" src="${src}" alt="" loading="lazy" draggable="false" onerror="this.remove()"${extra}>`;

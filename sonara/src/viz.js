@@ -35,7 +35,7 @@ export function initViz(canvas) {
   function target() {
     const wide = innerWidth > 980;
     if (layout === 'np') return { x: wide ? 3.6 : 0, y: wide ? -2.1 : -4.2, s: wide ? 0.62 : 0.5, o: wide ? 1 : 0.2 };
-    if (layout === 'home') return { x: wide ? 4.6 : 0, y: wide ? 0 : -5.4, s: 0.82, o: wide ? 1 : 0.3 };
+    if (layout === 'home') return { x: 0, y: -1, s: 1.15, o: 0.16 };
     return { x: 0, y: -1, s: 1.1, o: 0.22 };
   }
   const cur = { x: 0, y: 0, s: 1, o: 1 };

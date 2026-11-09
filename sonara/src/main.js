@@ -3,6 +3,7 @@ import { engine, DRUMS, mtof } from './audio.js';
 import { RHYTHMS, toState, emptyState } from './rhythms.js';
 import { SCALES, SCALE_FEEL, CHORDS, PROGRESSIONS, NOTES, noteName, diatonicChord, INTERVALS, INTERVAL_SONGS } from './theory.js';
 import { initViz, MODES } from './viz.js';
+import { initPads } from './pads.js';
 import { cover, hueOf, UNSPLASH } from './cover.js';
 import gsap from 'gsap';
 import { LESSONS } from './lessons.js';
@@ -126,7 +127,11 @@ function bindPiano(id, kind) { $$(`#${id} [data-m]`).forEach(e => e.addEventList
 const opts = (arr, sel) => arr.map(([v, l]) => `<option value="${v}"${v == sel ? ' selected' : ''}>${l}</option>`).join('');
 const rootOpts = sel => opts(NOTES.map((n, i) => [i, n]), sel);
 
+const STORY_ROWS = { kick: 'x...x...x...x...', snare: '....x.......x...', hat: 'x.x.x.x.x.x.x.x.', shaker: 'xxxxxxxxxxxxxxxx', conga: '..x..x..x..x..x.', bell: 'x..x..x.x..x..x.' };
+const STORY = [['The pulse', 'A kick on every beat tells your body where "one" is.', 0, ['kick']], ['The backbeat', 'A snare on two and four gives the groove its lean.', 1, ['kick', 'snare']], ['The shimmer', 'Hats and shakers fill the gaps and make it feel alive.', 2, ['kick', 'snare', 'hat', 'shaker']], ['The colour', 'Congas, a bell and a bass line turn a pattern into a style.', 3, ['kick', 'snare', 'hat', 'shaker', 'conga', 'bell']]];
+const FAQ = [['Is any of this recorded audio?', 'No. Every sound is built live from oscillators, filtered noise and effects using the Web Audio API. The site ships zero audio files.'], ['Can I save or share what I make?', 'Yes. Share links carry the whole pattern in the URL, and you can record a WebM take from the studio.'], ['Does it work on my phone?', 'Yes. The layout switches to a bottom tab bar and the pads and piano respond to touch.'], ['Where do the rhythms come from?', 'They are hand-written patterns inspired by real traditions, from Afrobeat and Juju to Samba and Techno.']];
 /* ---------- pages ---------- */
+let padsOff = null;
 const pages = {
   home() {
     viz.setHome(true);
@@ -138,14 +143,29 @@ const pages = {
 <p class="lead">Every drum, bass note and melody is synthesised live in your browser. No samples, no downloads. Play ${RHYTHMS.length} rhythms, rebuild them, record them.</p>
 <div class="btns"><button class="btn" id="hp">${PLAY_SVG.replace('<svg', '<svg width="18" height="18" fill="#111" stroke="#111"')} Play something</button><a class="btn ghost" href="#/studio">Open the studio</a><a class="btn ghost" href="#/arranger">Build a song</a></div>
 <div class="hstats"><div><b data-count="${RHYTHMS.length}">0</b><span>rhythms</span></div><div><b data-count="${DRUMS.length + 7}">0</b><span>instruments</span></div><div><b data-count="${Object.keys(SCALES).length}">0</b><span>scales</span></div><div><b data-count="0">0</b><span>audio files</span></div></div></div>
-<div class="feat"><button class="alb" data-id="${pick.id}" style="width:100%"><div class="art">${cover(pick.id, pick.name)}<span class="pl">${PLAY_SVG}</span></div><b>${pick.name}</b><small>Featured · ${pick.region}</small></button></div></section>
+<div class="machine"><div id="padbox"></div><div class="mhint"><i></i>Drag to spin · tap the pads to play</div></div></section>
 <h2 style="margin-top:10px">Quick picks</h2><div class="quick rv">${RHYTHMS.slice(0, 8).map(r => `<button class="qk" data-id="${r.id}"><span class="t">${cover(r.id, '', { noText: true })}</span>${r.name}<span class="pl">${PLAY_SVG}</span></button>`).join('')}</div>
 ${shelf('Made in Africa', 'West, Central and Southern Africa', by(r => africa.test(r.region)))}
 ${shelf('Dance floor', 'House, techno and club', by(r => /Dance|House/.test(r.tag)))}
 ${shelf('Hip-hop and chill', 'Slow, swung and dusty', by(r => /Hip-hop|Chill/.test(r.tag)))}
 ${shelf('Latin and Caribbean', 'Clave, dembow, one drop', by(r => /Latin|Jamaica|Puerto|Brazil|Colombia|Dominican|Cuba/.test(r.region + r.tag)))}
 ${shelf('Rolling 12/8', 'Every beat splits into three', by(r => r.div === 3))}
-<section class="shelf rv"><div class="shh"><h2>Jump in</h2></div><div class="tiles">${[['studio', 'Studio', 'Edit every step, shape the sound and record.', 14], ['arranger', 'Arranger', 'Chain patterns into a full song.', 170], ['learn', 'Learn', 'Ten short lessons with live examples.', 260], ['theory', 'Theory', 'Scales, chords and an ear trainer.', 320], ['lab', 'Sound lab', 'Play nine voices and drum pads.', 60]].map(([h, t, d, x]) => `<a class="tile" href="#/${h}" style="--x:${x}"><h3>${t}</h3><p>${d}</p><svg viewBox="0 0 24 24">${ICON[h]}</svg></a>`).join('')}</div></section>`;
+<section class="shelf rv"><div class="shh"><h2>Jump in</h2></div><div class="tiles">${[['studio', 'Studio', 'Edit every step, shape the sound and record.', 14], ['arranger', 'Arranger', 'Chain patterns into a full song.', 170], ['learn', 'Learn', 'Ten short lessons with live examples.', 260], ['theory', 'Theory', 'Scales, chords and an ear trainer.', 320], ['lab', 'Sound lab', 'Play nine voices and drum pads.', 60]].map(([h, t, d, x]) => `<a class="tile" href="#/${h}" style="--x:${x}"><h3>${t}</h3><p>${d}</p><svg viewBox="0 0 24 24">${ICON[h]}</svg></a>`).join('')}</div></section>
+<section class="story rv"><div class="shh"><h2>How a beat is built</h2><span class="meta">Hear each layer arrive</span></div>
+<div class="steps4">${STORY.map((t, i) => `<div class="sc" data-s="${i}"><span class="n">0${i + 1}</span><h3>${t[0]}</h3><p>${t[1]}</p><div class="mini">${t[3].map(k => `<div class="mr">${STORY_ROWS[k].split('').map(c => `<i class="${c === 'x' ? 'on' : ''}"></i>`).join('')}</div>`).join('')}</div><button class="btn ghost sp" data-s="${i}">Hear it</button></div>`).join('')}</div></section>
+<div class="marq rv" aria-hidden="true"><div class="mt">${[...RHYTHMS, ...RHYTHMS].map(r => `<span>${r.name}</span>`).join('')}</div></div>
+<section class="shelf rv faq"><div class="shh"><h2>Questions</h2></div>${FAQ.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</section>
+<section class="cta rv"><h2>Your turn.</h2><p>Pick a rhythm, break it apart, make it yours.</p><div class="btns"><a class="btn" href="#/studio">Open the studio</a><a class="btn ghost" href="#/rhythms">Browse ${RHYTHMS.length} rhythms</a></div></section>`;
+
+    const pbox = $('#padbox'), PD = ['kick', 'snare', 'clap', 'hat', 'ohat', 'conga', 'shaker', 'bell'];
+    if (padsOff) { padsOff(); padsOff = null; }
+    const pads = pbox && initPads(pbox, { onHit: i => { if (i < 8) { applyFx(); engine.drum(PD[i], ctxTime() + .005, 1.15); } else { const sc = SCALES[S.scaleName] || SCALES['Natural minor'] || [0, 2, 3, 5, 7, 8, 10]; note(S.root + 60 + sc[(i - 8) % sc.length] + 12 * Math.floor((i - 8) / sc.length), 'kalimba'); } }, labels: i => i < 8 ? [DRUMS[i].name, 'drum pad'] : [noteName((S.root + 60 + (SCALES[S.scaleName] || [0, 2, 3, 5, 7, 8, 10])[(i - 8) % 7]) % 12), 'kalimba note'] });
+    if (pads) {
+      pads.setHue(hueOf(pick.id)); pads.idle(S.name || 'SONARA', 'tap the pads');
+      const off = engine.on(i => { if (!pbox.isConnected) { off(); return; } if (i == null || !engine.playing) { pads.idle(S.name || 'SONARA', 'tap the pads'); return; } const L = S.length, set = []; S.tracks.forEach(t => { const k = PD.indexOf(t.id); if (k >= 0 && t.steps[i % L] && !t.mute) set.push(k); }); pads.setStep(i, set, S.name); });
+      padsOff = () => { off(); pads.destroy(); };
+    }
+    $$('.sp').forEach(b => b.onclick = () => { const k = STORY[+b.dataset.s][3], dr = {}; DRUMS.forEach(d => dr[d.id] = k.includes(d.id) ? STORY_ROWS[d.id] : ''); const st = toState({ id: 'story', name: 'Build: ' + STORY[+b.dataset.s][0], bpm: 112, len: 16, div: 4, swing: 0, drums: dr, bass: +b.dataset.s === 3 ? '0 . . . . . 0 . 3 . . . 2 . . .' : '', lead: '', root: 0, scale: 'Natural minor' }); S = { ...st, progIdx: S.progIdx, chords: { on: false, list: [] } }; songPos = null; engine.stop(); engine.start(cur); applyFx(); updatePlayer(); updatePlayState(); });
     bindAlbums(); $('#hp').onclick = () => { if (engine.playing) { engine.stop(); updatePlayState(); } else playRhythm(RHYTHMS[Math.floor(Math.random() * RHYTHMS.length)]); };
     $$('[data-count]').forEach(el => { const to = +el.dataset.count; if (REDUCE || !to) { el.textContent = to; return; } const o = { v: 0 }; gsap.to(o, { v: to, duration: 1.4, ease: 'power2.out', onUpdate: () => { el.textContent = Math.round(o.v); } }); });
     updatePlayState();
@@ -262,7 +282,7 @@ ${[['cutoff', 'Filter', 400, 12000, 50], ['delay', 'Echo', 0, 0.6, 0.01], ['reve
 <div class="grid"><div class="card"><h3>No audio files</h3><p>Kicks are sine sweeps, snares and hats are filtered noise, bass and leads are oscillators, reverb is generated noise. All of it runs through the Web Audio API.</p></div>
 <div class="card"><h3>Honest rhythms</h3><p>The patterns are simplified teaching versions that show each style's character. They are not transcriptions of specific songs.</p></div>
 <div class="card"><h3>Stack</h3><p>Vanilla JavaScript, Web Audio, three.js for the visualiser, Vite. Your work is saved in your own browser.</p></div></div>
-<h2>Photo credits</h2><p class="meta">Some covers use photos from <a href="https://unsplash.com/?utm_source=sonara&utm_medium=referral" style="color:var(--tx)">Unsplash</a>, used under the Unsplash licence. Others were supplied by the site's author.</p><div class="credits">${Object.entries(UNSPLASH).map(([k, [, by, u, pid]]) => `<span>${RHYTHMS.find(r => r.id === k)?.name || k}: <a href="https://unsplash.com/photos/${pid}?utm_source=sonara&utm_medium=referral">photo</a> by <a href="https://unsplash.com/@${u}?utm_source=sonara&utm_medium=referral">${by}</a></span>`).join('')}</div>
+<h2>Photo credits</h2><p class="meta">Some covers use photos from <a href="https://unsplash.com/?utm_source=sonara&utm_medium=referral" style="color:var(--tx)">Unsplash</a>, used under the Unsplash licence. Others were supplied by the site's author.</p><div class="credits">${Object.entries(UNSPLASH).map(([k, [, by, u, pid]]) => `<span>${RHYTHMS.find(r => r.id === k)?.name || k}: <a href="https://unsplash.com/photos/${pid}?utm_source=sonara&utm_medium=referral">photo</a> by <a href="https://unsplash.com/${u ? "@" + u : "photos/" + pid}?utm_source=sonara&utm_medium=referral">${by}</a></span>`).join('')}</div>
 <p class="meta" style="margin-top:24px">Built by Afolabi Peter. Includes a step sequencer, song arranger, 10 lessons, theory tools and a sound lab.</p>`;
   },
 };
@@ -292,7 +312,7 @@ function route() {
   const p = (location.hash.replace(/^#\/?/, '') || 'home').split('?')[0].split('/')[0], page = pages[p] ? p : 'home';
   $$('#nav a,#tabs a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#/' + (page === 'home' ? '' : page)));
   if (page === 'studio') { const q = location.hash.split('?p=')[1]; if (q) { try { const o = JSON.parse(decodeURIComponent(escape(atob(q)))); if (o && o.tracks && o.length) { S = o; save(); } } catch {} history.replaceState(null, '', '#/studio'); } }
-  window.__rq = null; pages[page](); scrollTo(0, 0); updatePlayer(); drawLib(); enter(); document.title = (page === 'home' ? 'SONARA — a music studio made of code' : `${page[0].toUpperCase() + page.slice(1)} · SONARA`);
+  window.__rq = null; if (padsOff && page !== 'home') { padsOff(); padsOff = null; } pages[page](); scrollTo(0, 0); updatePlayer(); drawLib(); enter(); document.title = (page === 'home' ? 'SONARA — a music studio made of code' : `${page[0].toUpperCase() + page.slice(1)} · SONARA`);
 }
 function enter() { if (REDUCE) return; const els = $$('.alb,.card,.panel,.tile,.qk,.shh,.hero2 .txt > *,.chips', app).slice(0, 60); gsap.fromTo(els, { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, stagger: 0.025, ease: 'power2.out', clearProps: 'transform,opacity' }); }
 $('#q').addEventListener('input', e => { qstr = e.target.value; if (!/rhythms/.test(location.hash)) location.hash = '#/rhythms'; else if (window.__rq) window.__rq(qstr); });
