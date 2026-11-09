@@ -4,11 +4,11 @@
 
 <a href="https://portfolio-one-kappa-p2gg1ejjj4.vercel.app"><img src="https://readme-typing-svg.demolab.com?font=Bricolage+Grotesque&weight=700&size=24&duration=2800&pause=900&color=D9472B&vCenter=true&width=560&height=40&lines=I+build+software+people+trust+with+their+money.;Payments+checked+on+the+server.;Double+bookings+the+database+refuses.;Books+that+balance+to+the+kobo." alt="I build software people trust with their money."></a>
 
-I'm a full-stack developer in Minna, Nigeria, and a Computer Engineering student at FUT Minna (CGPA 3.79/5). I like the unglamorous parts that make an app safe to depend on: checking payments on the server, letting the database refuse bad data, and writing tests that prove the numbers add up.
+I'm a junior full-stack engineer in Minna, Nigeria, and a Computer Engineering student at FUT Minna (CGPA 3.79/5). I like the unglamorous parts that make an app safe to depend on: checking payments on the server, letting the database refuse bad data, and writing tests that prove the numbers add up.
 
 **Portfolio:** [Portfolio site](https://portfolio-one-kappa-p2gg1ejjj4.vercel.app) · **CV:** [Download PDF](https://portfolio-one-kappa-p2gg1ejjj4.vercel.app/Afolabi-Peter-CV.pdf) · **Email:** afolabiprosper329@gmail.com · **LinkedIn:** [Afolabi Peter](https://www.linkedin.com/in/afolabipeter-dev)
 
-**Open to** junior full-stack, frontend or backend roles (remote or in Nigeria) and freelance builds for small businesses.
+**Open to** junior full-stack, frontend or backend roles (remote or in Nigeria) and internships.
 
 ### Things I've built
 
