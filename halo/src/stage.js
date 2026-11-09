@@ -60,13 +60,19 @@ function layout() {
   camera.fov = mobile() ? 42 : 32;
   camera.updateProjectionMatrix();
 }
-addEventListener('resize', layout);
+addEventListener('resize', () => { layout(); if (curView === 'home') view('home'); });
 layout();
 
+let curView = null;
+/* half the visible world width at the model's distance, so the model can be sized to a share of the screen width */
+const halfW = camZ => camZ * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
+/* world-x that puts the model's centre at fraction f of the screen width, for the current camera */
+const xAt = (f, camZ) => (f - 0.5) * 2 * camZ * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
 function view(name) {
+  curView = name;
   const m = mobile();
   const v = {
-    home: { x: m ? 0 : 2.7, y: m ? 1.3 : -0.1, scale: m ? 0.78 : 1.1, camZ: m ? 9.5 : 8.2, explode: 0, rot: 0.25, tilt: 0.08 },
+    home: { x: m ? 0 : xAt(0.8, 8.2), y: m ? 1.3 : -0.1, scale: m ? 0.78 : Math.min(0.85, 0.16 * halfW(8.2)), camZ: m ? 9.5 : 8.2, explode: 0, rot: 0.25, tilt: 0.08 },
     product: { x: m ? 0 : -1.75, y: m ? 1.25 : 0, scale: m ? 0.9 : 1.1, camZ: m ? 9.5 : 8.4, explode: 0, rot: 0.3, tilt: 0.1 },
   }[name];
   if (!v) return;
