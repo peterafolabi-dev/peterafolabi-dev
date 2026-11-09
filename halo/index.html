@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HALO — concept audio store</title>
+<meta name="description" content="HALO is a concept audio store: 42 products as live 3D models, with filters, wishlist, compare, bundles and a working cart and checkout demo. Nothing is for sale.">
+<meta property="og:title" content="HALO — concept audio store">
+<meta property="og:description" content="42 products you can spin, explode and recolor in 3D. A fully working demo shop built with three.js.">
+<meta name="theme-color" content="#0b0a09">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%23ff5a2c' stroke-width='4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<div id="loader"><span>HALO</span><i></i></div>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="notice">Concept store · checkout is a demo, no payment is taken and nothing ships</div>
+<header class="top">
+  <a class="logo" href="#/">HALO</a>
+  <nav class="nav" id="nav"><a data-r href="#/shop">Shop</a><a data-r href="#/bundles">Bundles</a><a data-r href="#/finder">Find yours</a><a data-r href="#/journal">Journal</a><a data-r href="#/support">Support</a></nav>
+  <div class="tools2">
+    <button id="searchBtn" class="ibtn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>
+    <a id="wishBtn" class="ibtn" href="#/wishlist" aria-label="Wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><i id="wbadge" hidden>0</i></a>
+    <button id="cartBtn" class="ibtn" aria-label="Open cart"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><i id="badge" hidden>0</i></button>
+    <button id="menuBtn" class="ibtn mbtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</header>
+<div id="searchBox" class="sbox" hidden><div class="sin"><input id="sq" type="search" placeholder="Search 42 products" autocomplete="off" aria-label="Search products"><button id="sx" aria-label="Close search">×</button></div><div id="sres"></div></div>
+<main id="app" tabindex="-1"></main>
+<div id="scrim"></div>
+<aside id="drawer" aria-label="Cart"><header><b>Your cart</b><button id="closeDrawer" aria-label="Close cart">×</button></header><div class="lines"></div><div class="sum"></div></aside>
+<div id="cmpbar" class="cmpbar" hidden></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="/src/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORBIS — the geographic atlas of a generated world</title>
+<meta name="description" content="ORBIS is an interactive geographic atlas of a procedurally generated Earth-scale world: a live globe and flat map, winds, seasons, day length, a distance tool, atmosphere layers, records, 60+ countries, plates, biomes and a 45-question quiz.">
+<meta property="og:title" content="ORBIS — the geographic atlas of a generated world">
+<meta property="og:description" content="A 21-chapter interactive atlas: globe, flat map, winds, seasons, distance tool, atmosphere, records, countries and more, on a planet generated live in your browser.">
+<meta name="theme-color" content="#04070d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2314305a'/%3E%3Ccircle cx='12' cy='13' r='6' fill='%2347b36a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<div id="loader"><span>ORBIS</span><small>generating world…</small></div>
+<canvas id="gl" role="img" aria-label="Interactive 3D procedural planet. Drag to rotate."></canvas>
+<div id="cur"></div>
+
+<header class="nav">
+  <a class="logo" href="#hero"><i></i>ORBIS</a>
+  <nav><a href="#spin">Explore</a><a href="#map">Map</a><a href="#time">Seasons</a><a href="#winds">Winds</a><a href="#layers">Layers</a><a href="#atlas">Atlas</a><a href="#countries">Countries</a><a href="#quiz">Quiz</a></nav>
+  <button id="tocBtn" class="tocbtn" aria-expanded="false" aria-controls="toc">Contents</button>
+  <div class="progress"><b id="bar"></b></div>
+</header>
+<div id="toc" class="toc" hidden role="dialog" aria-label="Contents"><div class="tocw"><header><b>Contents</b><button id="tocX" aria-label="Close contents">×</button></header><div id="tocGrid"></div></div></div>
+
+<main id="main">
+  <section id="hero" class="sec hero" data-t="Orbit">
+    <p class="mono">The geographic atlas · Earth-scale · generated live</p>
+    <h1>ORBIS</h1>
+    <p class="sub">An interactive atlas of a whole world: a live globe, a flat map, winds, seasons, atmosphere, records and countries, all computed in your browser.</p>
+    <div class="hint">Drag to spin · Click the planet to probe · Scroll to descend</div>
+  </section>
+
+  <section id="spin" class="sec left" data-t="Probe the globe">
+    <div class="panel">
+      <p class="mono">01 / Probe the surface</p>
+      <h2>Click<br>anywhere.</h2>
+      <p>Click any point on the globe to read its latitude and longitude, terrain, estimated elevation, biome, climate zone, local solar time and today's day length. Every reading is computed from the same shader that draws the planet.</p>
+      <div class="tags"><span>Lat / long</span><span>Biome</span><span>Solar time</span><span>Day length</span></div>
+      <label class="tog"><input type="checkbox" id="grid"><span>Gridlines (15°)</span></label>
+      <label class="tog"><input type="checkbox" id="climate"><span>Climate zones</span></label>
+    </div>
+  </section>
+
+  <section id="map" class="sec doc wide" data-t="The flat map">
+    <div class="docw">
+      <p class="mono">02 / The flat map</p>
+      <h2>The world, <em>unrolled.</em></h2>
+      <p>The same planet drawn as a flat equirectangular map, one pixel at a time on the GPU. Switch between relief, biomes, temperature and rainfall. Hover for coordinates; click to drop the probe, and the globe turns to face it.</p>
+      <div class="chips" id="mapModes"></div>
+      <div class="mapbox"><canvas id="mapc" width="720" height="360" aria-label="Flat map of the generated world"></canvas></div>
+      <div class="mapfoot"><span id="mapread">Hover the map · click to probe</span><span class="tg"><label class="tog"><input type="checkbox" id="mapGrid" checked><span>Gridlines</span></label><label class="tog"><input type="checkbox" id="mapZones"><span>Equator, tropics, polar circles</span></label></span></div>
+      <div class="legend" id="mapLegend"></div>
+      <p class="note">Temperature is a simple model (about 29 °C at the equator falling with latitude and 6.5 °C per kilometre of height). Rainfall is the world’s generated moisture field, not real climate data. Move the sea level or generate a new world and this map redraws.</p>
+    </div>
+  </section>
+
+  <section id="time" class="sec right" data-t="Sun and seasons">
+    <div class="panel">
+      <p class="mono">03 / Sun and seasons</p>
+      <h2>Move the<br>year.</h2>
+      <p>The planet is tilted 23.44° like Earth, so the Sun's overhead latitude (declination) drifts between the tropics through the year. Slide the date and watch the terminator and the day length change.</p>
+      <label class="rng"><span>Date <b id="dv">21 Jun</b></span><input id="day" type="range" min="1" max="365" value="172"></label>
+      <label class="rng"><span>Sun longitude <b id="tv">Noon</b></span><input id="sun" type="range" min="0" max="360" value="40"></label>
+      <div class="read"><div><small>Sun overhead at</small><b id="decl">23.4° N</b></div><div><small>Season</small><b id="seas">Northern summer</b></div></div>
+    </div>
+  </section>
+
+  <section id="daylen" class="sec doc" data-t="Day length">
+    <div class="docw">
+      <p class="mono">04 / Day length</p>
+      <h2>Hours of <em>light.</em></h2>
+      <p>How long the Sun stays up at any latitude through the year. The dot shows today’s date on the Sun and seasons slider above. Pick a latitude and see sunrise, sunset and the noon height of the Sun.</p>
+      <div class="chips" id="dayLatChips"></div>
+      <label class="rng"><span>Latitude <b id="dlv">40° N</b></span><input id="dlat" type="range" min="-90" max="90" step="0.5" value="40"></label>
+      <canvas id="dayc" width="700" height="250" aria-label="Chart of day length through the year"></canvas>
+      <div class="read four" id="dayread"></div>
+      <p class="note">Idealised: sunrise and sunset are the moments the Sun’s centre is on the horizon, in local solar time, with no atmospheric refraction.</p>
+    </div>
+  </section>
+
+  <section id="sea" class="sec left" data-t="Sea level">
+    <div class="panel">
+      <p class="mono">05 / Sea level</p>
+      <h2>Raise<br>the oceans.</h2>
+      <p>One number in the shader decides what is land. Slide it and coastlines retreat or drown in real time.</p>
+      <label class="rng"><span>Sea level <b id="sv">0</b></span><input id="level" type="range" min="-100" max="100" value="0"></label>
+      <div class="meter"><i id="land"></i></div>
+      <small class="mono dim" id="landtxt">land visible</small>
+      <canvas id="relief" width="400" height="130" aria-label="Hypsometric curve: elevation against share of the surface"></canvas>
+      <p class="relnote" id="reltxt"></p>
+    </div>
+  </section>
+
+  <section id="shape" class="sec right" data-t="Make a new world">
+    <div class="panel">
+      <p class="mono">06 / Reshape</p>
+      <h2>Make a<br>new world.</h2>
+      <p>The seed is a point in noise space. Move it and the continents morph into new ones, smoothly. Every probe reading, zone and fact above adapts to the new geography.</p>
+      <button class="btn" id="regen">Generate a new world</button>
+      <label class="tog"><input type="checkbox" id="clouds" checked><span>Clouds</span></label>
+      <label class="tog"><input type="checkbox" id="atmo" checked><span>Atmosphere</span></label>
+    </div>
+  </section>
+
+  <section id="winds" class="sec left" data-t="Winds">
+    <div class="panel">
+      <p class="mono">07 / Winds</p>
+      <h2>Belts of<br>wind.</h2>
+      <p>Uneven heating and the planet’s spin sort the air into three circulation cells in each hemisphere. Near the equator the trade winds blow from the east; in mid-latitudes the westerlies blow from the west; near the poles the winds turn easterly again. The streaks on the globe follow those belts.</p>
+      <div class="tags"><span>Trade winds 0–30°</span><span>Westerlies 30–60°</span><span>Polar easterlies 60–90°</span></div>
+      <label class="tog"><input type="checkbox" id="winds-tog" checked><span>Show winds on the globe</span></label>
+      <p class="relnote">Where the trade winds meet near the equator the air rises, forming the rain belt called the ITCZ. It follows the overhead Sun north and south through the year, which is why many tropical regions have a wet and a dry season.</p>
+    </div>
+  </section>
+
+  <section id="measure" class="sec right" data-t="Measure distance">
+    <div class="panel">
+      <p class="mono">08 / Measure</p>
+      <h2>Distance<br>on a sphere.</h2>
+      <p>Click two points on the globe. The shortest path between them is a great circle, which is why flights curve over the poles on flat maps. Or load a preset pair of coordinates.</p>
+      <div class="chips" id="mpresets"></div>
+      <div class="read four" id="mres"></div>
+      <small class="mono dim" id="mhint">Scroll here to switch the globe to measure mode.</small>
+      <p class="relnote">The world is generated, so only the coordinates of the presets come from real cities. Distances use Earth’s mean radius of 6,371 km.</p>
+    </div>
+  </section>
+
+  <section id="layers" class="sec left" data-t="Inside the planet">
+    <div class="panel">
+      <p class="mono">09 / Inside the planet</p>
+      <h2>Cut it<br>open.</h2>
+      <p>A planet is layers. Choose one to highlight it. Thicknesses and temperatures are Earth's (approximate); the crust is exaggerated so you can see it.</p>
+      <div class="chips" id="layerChips"></div>
+      <div class="lay" id="layerInfo"></div>
+    </div>
+  </section>
+
+  <section id="sky" class="sec doc" data-t="The atmosphere">
+    <div class="docw">
+      <p class="mono">10 / The atmosphere</p>
+      <h2>Up through<br><em>the air.</em></h2>
+      <p>Drag the slider from sea level to 10,000 km. The scale is logarithmic, so the thin layers near the ground get as much room as the vast ones near space.</p>
+      <label class="rng"><span>Altitude <b id="altv">0.0 km</b></span><input id="alt" type="range" min="0" max="100" value="0"></label>
+      <div class="atmbar" id="atmBar" aria-hidden="true"></div>
+      <div class="lay altinfo" id="altInfo"></div>
+      <p class="note">Temperature and pressure follow the US Standard Atmosphere up to 100 km (approximate). Above that, temperature depends on solar activity.</p>
+    </div>
+  </section>
+
+  <section id="atlas" class="sec doc" data-t="World in numbers">
+    <div class="docw">
+      <p class="mono">11 / The atlas</p>
+      <h2>World <em>in numbers.</em></h2>
+      <p class="note">ORBIS is modelled at Earth's scale, so these are Earth's real figures, rounded. Definitions and surveys vary, so some values differ slightly between sources.</p>
+
+      <h3>The planet</h3>
+      <div class="kpis">
+        <div><b data-n="6371" data-s=" km">0</b><small>mean radius</small></div>
+        <div><b data-n="40075" data-s=" km">0</b><small>equatorial circumference</small></div>
+        <div><b data-n="510" data-d="1" data-s=" M km²">0</b><small>surface area</small></div>
+        <div><b data-n="70.8" data-d="1" data-s="%">0</b><small>ocean cover</small></div>
+        <div><b data-n="23.44" data-d="2" data-s="°">0</b><small>axial tilt</small></div>
+        <div><b data-n="365.256" data-d="3" data-s=" d">0</b><small>orbital period</small></div>
+      </div>
+
+      <h3>Continents <small>area, million km²</small></h3>
+      <div class="bars" id="continents"></div>
+      <h3>Oceans <small>area, million km²</small></h3>
+      <div class="bars" id="oceans"></div>
+
+      <h3>Climate zones by latitude</h3>
+      <div class="zones">
+        <div style="--c:#ff6b3d"><b>Tropics</b><span>0° – 23.44°</span><p>Warm all year. The Sun is overhead at noon at least once a year. Rainforest, savanna and hot desert.</p></div>
+        <div style="--c:#ffd24a"><b>Subtropics</b><span>23.44° – 35°</span><p>Hot summers, mild winters. Home to most of the world's great hot deserts and Mediterranean climates.</p></div>
+        <div style="--c:#5be08a"><b>Temperate</b><span>35° – 66.56°</span><p>Four distinct seasons. Deciduous and boreal forest, grassland and steppe.</p></div>
+        <div style="--c:#8fd3ff"><b>Polar</b><span>66.56° – 90°</span><p>Midnight sun and polar night. Tundra and ice caps; the Sun never climbs high.</p></div>
+      </div>
+
+      <h3>Extremes of the real Earth</h3>
+      <table class="ext">
+        <tr><th>Highest point</th><td>Mount Everest, 8,849 m above sea level</td></tr>
+        <tr><th>Deepest point</th><td>Challenger Deep, about 10,935 m below sea level</td></tr>
+        <tr><th>Lowest dry land</th><td>Dead Sea shore, about 430 m below sea level</td></tr>
+        <tr><th>Longest river</th><td>Nile, about 6,650 km (the Amazon is close; it depends on how you measure)</td></tr>
+        <tr><th>Largest hot desert</th><td>Sahara, about 9.2 million km²</td></tr>
+        <tr><th>Largest island</th><td>Greenland, about 2.17 million km²</td></tr>
+        <tr><th>Longest mountain range</th><td>The Andes, about 7,000 km</td></tr>
+      </table>
+
+      <h3>Longitude and time</h3>
+      <p>The planet turns 360° in a day, so the Sun appears to cross 15° of longitude every hour. Local solar time shifts by 4 minutes for each degree you move east or west. Click the globe to read the local solar time at any point.</p>
+      <div class="kpis two"><div><b id="utc">--:--</b><small>UTC now</small></div><div><b>15°</b><small>of longitude per hour</small></div></div>
+    </div>
+  </section>
+
+  <section id="records" class="sec doc" data-t="Records of the Earth">
+    <div class="docw">
+      <p class="mono">12 / Records</p>
+      <h2>Highest, longest,<br><em>deepest.</em></h2>
+      <div class="chips" id="recTabs"></div>
+      <div id="recBody"></div>
+    </div>
+  </section>
+
+  <section id="countries" class="sec doc wide" data-t="Countries">
+    <div class="docw">
+      <p class="mono">13 / Countries</p>
+      <h2>Countries <em>compared.</em></h2>
+      <p>Sort by any column, filter by continent or search by name or capital. Figures are rounded estimates for 2023–24; borders, capitals and counts are simplified (for example, Turkey and Russia span two continents and are listed under one).</p>
+      <div class="ctools"><input id="ctryQ" type="search" placeholder="Search country or capital" aria-label="Search countries"><select id="ctryC" aria-label="Continent"></select><span id="ctryN" class="dim"></span></div>
+      <div class="tscroll"><table class="ctbl" id="ctryT"><thead><tr><th>#</th><th data-k="name" aria-sort="none"><button>Country</button></th><th data-k="cont" aria-sort="none"><button>Continent</button></th><th data-k="cap" aria-sort="none"><button>Capital</button></th><th data-k="area" aria-sort="none"><button>Area km²</button></th><th data-k="pop" aria-sort="none"><button>Population</button></th><th data-k="den" aria-sort="none"><button>People / km²</button></th></tr></thead><tbody id="ctryBody"></tbody></table></div>
+      <div class="cmp" id="cmp"><h3>Head to head</h3><div class="cmpsel"><select id="cmpA" aria-label="First country"></select><span>vs</span><select id="cmpB" aria-label="Second country"></select></div><div id="cmpOut" aria-live="polite"></div></div>
+    </div>
+  </section>
+
+  <section id="plates" class="sec doc" data-t="Plate tectonics">
+    <div class="docw">
+      <p class="mono">14 / Plate tectonics</p>
+      <h2>A cracked<br><em>shell.</em></h2>
+      <p>Earth’s crust and uppermost mantle are broken into plates that drift a few centimetres a year, about as fast as fingernails grow. Where they meet you find mountains, trenches, earthquakes and volcanoes.</p>
+      <h3>The seven major plates <small>area · typical speed (approx.)</small></h3>
+      <div class="plgrid" id="plateList"></div>
+      <h3>Three kinds of boundary</h3>
+      <div class="bounds" id="bounds"></div>
+      <p class="note">About 90% of earthquakes and roughly three-quarters of active volcanoes lie along the Pacific “Ring of Fire”.</p>
+    </div>
+  </section>
+
+  <section id="biomes" class="sec doc" data-t="Biomes">
+    <div class="docw">
+      <p class="mono">15 / Biomes</p>
+      <h2>Ten kinds of <em>habitat.</em></h2>
+      <p>The same rules that colour the flat map’s biome view: latitude, moisture and height decide what grows. Typical ranges are approximate.</p>
+      <div class="biogrid" id="biomeList"></div>
+    </div>
+  </section>
+
+  <section id="system" class="sec doc wide" data-t="The solar system">
+    <div class="docw">
+      <p class="mono">16 / The solar system</p>
+      <h2>Next door <em>worlds.</em></h2>
+      <p>Earth is one of eight planets. Sizes below are to scale with each other (not distances).</p>
+      <canvas id="sizes" width="760" height="170" aria-label="Planets drawn to relative scale"></canvas>
+      <div class="tscroll"><table class="ctbl sys"><thead><tr><th>Planet</th><th>Radius</th><th>Gravity</th><th>Rotation</th><th>Year</th><th>Mean temp.</th><th>From Sun</th></tr></thead><tbody id="sysBody"></tbody></table></div>
+      <h3>Your weight elsewhere</h3>
+      <label class="rng"><span>Your mass <b>kg</b></span><input id="wkg" type="number" min="1" max="500" value="70" aria-label="Your mass in kilograms"></label>
+      <div class="rbars" id="wout"></div>
+      <p class="note">What a bathroom scale calibrated on Earth would read: mass × local gravity ÷ 9.81. Your mass does not change, only the pull. Temperatures are averages (cloud-top for the gas giants).</p>
+    </div>
+  </section>
+
+  <section id="clocks" class="sec doc wide" data-t="World clocks">
+    <div class="docw">
+      <p class="mono">17 / World clocks</p>
+      <h2>Right <em>now.</em></h2>
+      <p>The live time in eighteen cities, from your device’s clock and the browser’s time-zone database. Noon is not the same moment everywhere because the planet turns 15° of longitude per hour.</p>
+      <div class="clocks" id="clockList"></div>
+    </div>
+  </section>
+
+  <section id="deeptime" class="sec doc" data-t="Deep time">
+    <div class="docw">
+      <p class="mono">18 / Deep time</p>
+      <h2>Earth’s history in<br><em>one day.</em></h2>
+      <p>Squash 4.54 billion years into 24 hours, starting at midnight when Earth forms. Almost nothing familiar happens until the final minutes.</p>
+      <div class="timeline" id="timeline"></div>
+      <p class="note">Dates are rounded; scientists revise them as new evidence appears.</p>
+    </div>
+  </section>
+
+  <section id="glossary" class="sec doc" data-t="Glossary">
+    <div class="docw">
+      <p class="mono">19 / Glossary</p>
+      <h2>Words for <em>places.</em></h2>
+      <div class="ctools"><input id="glossQ" type="search" placeholder="Search terms" aria-label="Search glossary"><span id="glossN" class="dim"></span></div>
+      <dl class="gloss" id="gloss"></dl>
+    </div>
+  </section>
+
+  <section id="moon" class="sec doc" data-t="The Moon">
+    <div class="docw">
+      <p class="mono">20 / The Moon</p>
+      <h2>Phase <em>today.</em></h2>
+      <div class="moonrow"><canvas id="phase" width="160" height="160" aria-label="Current phase of the Moon"></canvas><div><b id="mname">–</b><p id="mtxt"></p></div></div>
+      <p class="note">Computed from the average synodic month (29.53 days) counted from a known new moon, so it is accurate to about a day.</p>
+    </div>
+  </section>
+
+  <section id="quiz" class="sec doc" data-t="Geography quiz">
+    <div class="docw">
+      <p class="mono">21 / Test yourself</p>
+      <h2>Geography <em>quiz.</em></h2>
+      <p>Eight random questions from a pool of 45 each round. Options are shuffled every time.</p>
+      <div class="quiz" id="quizBox"></div>
+    </div>
+  </section>
+
+  <section id="outro" class="sec center" data-t="End of orbit">
+    <p class="mono">End of orbit</p>
+    <h2>One shader.<br><em>A whole atlas.</em></h2>
+    <p class="sub">three.js · GLSL · GSAP. No textures, no models, no audio, no images. Facts are Earth's, rounded.</p>
+    <div class="links"><a href="#hero">Back to orbit</a><a href="#spin">Probe the world</a><a href="#quiz">Retake the quiz</a></div>
+  </section>
+</main>
+<aside id="hud" aria-live="polite" hidden></aside>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
