@@ -156,8 +156,19 @@ function route(internal) {
   openDrawer(false); openSearch(false);
 }
 
+function homeFx() {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sw = $('#swap');
+  if (sw && !reduce) { const w = sw.dataset.w.split('|'); let i = 0; clearInterval(window.__swap); window.__swap = setInterval(() => { if (!document.body.contains(sw)) return clearInterval(window.__swap); sw.classList.add('out'); setTimeout(() => { i = (i + 1) % w.length; sw.textContent = w[i]; sw.classList.remove('out'); }, 350); }, 2200); }
+  $$('[data-count]').forEach(el => { const to = +el.dataset.count; if (reduce) { el.textContent = to; return; } const t0 = performance.now(); const tick = t => { const k = Math.min(1, (t - t0) / 1400); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
+  const rv = $$('.rv'); if (reduce || !('IntersectionObserver' in window)) { rv.forEach(e => e.classList.add('in')); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+  rv.forEach(e => io.observe(e));
+}
+
 function bind(seg, q) {
   const s = seg[0];
+  if (!s) homeFx();
   if (s === 'checkout') bindCheckout();
   if (s === 'shop' || s === 'collection') bindShop(q, '#/' + seg.join('/'));
   if (s === 'product') bindPdp(byId(seg[1]));

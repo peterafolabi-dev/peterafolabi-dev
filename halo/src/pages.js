@@ -37,34 +37,59 @@ const recentProducts = () => S.recent.map(byId).filter(Boolean);
 /* ------------------------------------------------------------ home */
 export function home() {
   stage.hide(false); stage.show('over-ear', FINISHES.Obsidian, '#ff5a2c', 1); stage.view('home'); stage.spin(true); stage.explode(0);
+  const base = PRODUCTS.filter(p => !p.edition);
   const newest = PRODUCTS.filter(p => p.new).slice(0, 4);
   const sale = PRODUCTS.filter(p => p.was && !p.edition).slice(0, 4);
+  const flag = [...new Set(CATS)].map(c => base.filter(p => p.cat === c).sort((a, b) => b.price - a.price)[0]).filter(Boolean).sort((a, b) => b.price - a.price).slice(0, 3);
+  const eds = EDITIONS.map(e => ({ e, p: byId('halo-one-' + e.id) || PRODUCTS.find(x => x.edition === e.id) }));
+  const mq = ['Free delivery over ' + fmt(FREE_OVER), '30-day returns (concept)', '12-month warranty (concept)', 'Bundle and save up to 10%'];
   return `<section class="hero">
     <p class="kicker">Concept store · 2026</p>
     <h1><span>HA</span><span>LO</span></h1>
-    <p class="lede">${PRODUCTS.length} products in ${CATS.length} categories. Headphones, earbuds, speakers and studio gear in one obsessive lineup.</p>
+    <p class="lede">Obsessive audio for <b class="swap" id="swap" data-w="headphones|earbuds|speakers|studio gear|turntables">headphones</b>. ${PRODUCTS.length} products you can spin, explode and recolour in 3D.</p>
     <div class="cta-row"><a class="btn" href="#/shop">Shop the lineup</a><a class="btn ghost" href="#/finder">Find your HALO</a></div>
+    <dl class="hstats"><div><dt data-count="${PRODUCTS.length}">0</dt><dd>products</dd></div><div><dt data-count="${EDITIONS.length}">0</dt><dd>colour editions</dd></div><div><dt data-count="${BUNDLES.length}">0</dt><dd>bundles</dd></div><div><dt data-count="${COLLECTIONS.length}">0</dt><dd>collections</dd></div></dl>
     <div class="hint"><span class="dot"></span> Drag to spin · scroll to explore</div>
   </section>
   <div class="solid">
-    <div class="strip"><span>Free delivery over ${fmt(FREE_OVER)}</span><span>30-day returns (concept)</span><span>12-month warranty (concept)</span><span>Bundle and save up to 10%</span><span>Free delivery over ${fmt(FREE_OVER)}</span><span>30-day returns (concept)</span><span>12-month warranty (concept)</span><span>Bundle and save up to 10%</span></div>
-    <section class="wrap"><header class="sh"><p class="kicker">Shop by category</p><h2>Find your <em>sound.</em></h2></header>
-      <div class="cats">${CATS.map(c => `<a class="cat" href="#/shop?cat=${c}"><b>${c}</b><span>${PRODUCTS.filter(p => p.cat === c).length} products</span><i>→</i></a>`).join('')}</div></section>
-    <section class="wrap"><header class="sh"><p class="kicker">Best of the lineup</p><h2>Start <em>here.</em></h2></header><div class="grid">${PRODUCTS.filter(p => p.tier === 0 && !p.edition).slice(0, 8).map(card).join('')}</div>
+    <div class="strip">${[...mq, ...mq].map(t => `<span>${t}</span>`).join('')}</div>
+    <section class="wrap rv"><header class="sh"><p class="kicker">Start in 30 seconds</p><h2>Three ways <em>in.</em></h2></header>
+      <div class="quick">
+        <a href="#/finder"><b>01</b><h3>Find your HALO</h3><p>Four questions about where, how and what you listen to. We match you to a product.</p><i>→</i></a>
+        <a href="#/compare"><b>02</b><h3>Compare side by side</h3><p>Tick up to three products anywhere in the shop and see every spec in one table.</p><i>→</i></a>
+        <a href="#/bundles"><b>03</b><h3>Build a setup</h3><p>${BUNDLES.length} ready-made bundles. Any two products save 5%, any three save 10%.</p><i>→</i></a>
+      </div></section>
+    <section class="wrap rv"><header class="sh"><p class="kicker">Shop by category</p><h2>Find your <em>sound.</em></h2></header>
+      <div class="cats big">${CATS.map(c => { const rep = base.filter(p => p.cat === c).sort((a, b) => b.price - a.price)[0]; return `<a class="cat" href="#/shop?cat=${c}">${rep ? `<img src="${thumb(rep, rep.colors[0])}" alt="" loading="lazy">` : ''}<b>${c}</b><span>${PRODUCTS.filter(p => p.cat === c).length} products</span><i>→</i></a>`; }).join('')}</div></section>
+    <section class="wrap rv"><header class="sh"><p class="kicker">Flagships</p><h2>The <em>top of each range.</em></h2></header>
+      <div class="flag">${flag.map((p, i) => `<article class="fl2"><small>0${i + 1} · ${p.cat}</small><img src="${thumb(p, p.colors[0])}" alt="${esc(p.name)}" loading="lazy"><h3>${esc(p.name)}</h3><p>${esc(p.blurb)}</p><ul>${p.features.slice(0, 3).map(f => `<li>${esc(f)}</li>`).join('')}</ul><div class="row"><b>${fmt(p.price)}</b><a class="btn" href="#/product/${p.id}">View in 3D</a></div></article>`).join('')}</div></section>
+    <section class="wrap rv"><header class="sh"><p class="kicker">Best of the lineup</p><h2>Start <em>here.</em></h2></header><div class="grid">${base.filter(p => p.tier === 0).slice(0, 8).map(card).join('')}</div>
       <div class="cta-row"><a class="btn ghost" href="#/shop">See all ${PRODUCTS.length} products</a></div></section>
+    <section class="wrap rv"><header class="sh"><p class="kicker">Colour editions</p><h2>Every product, <em>four more ways.</em></h2></header>
+      <div class="eds">${eds.map(({ e, p }) => `<a class="ed" href="#/shop?ed=${e.id}" style="--ea:${e.accent}"><img src="${thumb(p, p.colors[0])}" alt="" loading="lazy"><b>${e.name}</b><p>${e.note}</p><span class="sw">${e.colors.map(c => `<i title="${c}"></i>`).join('')}</span><small>${PRODUCTS.filter(x => x.edition === e.id).length} products →</small></a>`).join('')}</div></section>
     ${strip(newest, 'New <em>editions.</em>', 'Just arrived')}
-    <section class="wrap"><header class="sh"><p class="kicker">Collections</p><h2>Shop by <em>moment.</em></h2></header>
+    <section class="wrap rv"><header class="sh"><p class="kicker">Collections</p><h2>Shop by <em>moment.</em></h2></header>
       <div class="cols">${COLLECTIONS.map(c => `<a class="col" href="#/collection/${c.id}"><b>${c.name}</b><span>${PRODUCTS.filter(c.test).length} products</span><p>${c.blurb}</p></a>`).join('')}</div></section>
     ${strip(sale, 'On <em>offer.</em>', 'Concept price cuts')}
-    <section class="wrap band"><div><p class="kicker">Build a setup</p><h2>Bundle <em>and save.</em></h2><p>Add two different products to your cart and save 5%. Add three and save 10%. Or start from one of our six ready-made bundles.</p></div><a class="btn" href="#/bundles">See bundles</a></section>
-    <section class="wrap feat"><header class="sh"><p class="kicker">Why HALO</p><h2>Details you <em>hear.</em></h2></header>
+    <section class="wrap rv band"><div><p class="kicker">Build a setup</p><h2>Bundle <em>and save.</em></h2><p>Add two different products to your cart and save 5%. Add three and save 10%. Or start from one of our ${BUNDLES.length} ready-made bundles.</p></div><a class="btn" href="#/bundles">See bundles</a></section>
+    <section class="wrap feat rv"><header class="sh"><p class="kicker">Why HALO</p><h2>Details you <em>hear.</em></h2></header>
       <div class="f3">
         <article><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><h3>Real drivers, real tuning</h3><p>Every product states its driver and how it is tuned, flat first and warm second.</p></article>
         <article><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg><h3>Built to be repaired</h3><p>Replaceable pads, detachable cables, standard screws. Parts are listed on every product page.</p></article>
         <article><svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg><h3>Honest numbers</h3><p>Battery life with noise cancelling on, weight with the pads on. We state how every number is measured.</p></article>
       </div></section>
-    <section class="wrap"><header class="sh"><p class="kicker">Journal</p><h2>Listen <em>closer.</em></h2></header>
-      <div class="arts">${ARTICLES.slice(0, 3).map(a => `<a class="art2" href="#/journal/${a.id}"><small>${a.tag} · ${a.mins} min</small><b>${a.title}</b><p>${a.lede}</p></a>`).join('')}</div></section>
+    <section class="wrap rv"><header class="sh"><p class="kicker">How this demo works</p><h2>A real shop, <em>not a real sale.</em></h2></header>
+      <ol class="steps3"><li><b>1</b><h3>Browse and fill a cart</h3><p>Filters, wishlist, compare and a cart that remembers you in this browser.</p></li><li><b>2</b><h3>Check out with demo details</h3><p>Delivery by Nigerian state, coupons and VAT are all calculated. No payment is taken.</p></li><li><b>3</b><h3>Track a demo order</h3><p>Orders are saved only in your browser. Nothing ships and nobody is charged.</p></li></ol></section>
+    <section class="wrap rv"><header class="sh"><p class="kicker">Journal</p><h2>Listen <em>closer.</em></h2></header>
+      <div class="arts">${ARTICLES.slice(0, 3).map(a => `<a class="art2" href="#/journal/${a.id}"><small>${a.tag} · ${a.mins} min</small><b>${a.title}</b><p>${a.lede}</p></a>`).join('')}</div>
+      <div class="cta-row"><a class="btn ghost" href="#/journal">All ${ARTICLES.length} articles</a></div></section>
+    <section class="wrap rv"><header class="sh"><p class="kicker">Quick answers</p><h2>Before you <em>ask.</em></h2></header>
+      <div class="faq3">
+        <details><summary>Can I actually buy anything?</summary><p>No. HALO is a concept store: nothing is for sale, no payment is taken and nothing ships.</p></details>
+        <details><summary>Where is my cart and order data stored?</summary><p>Only in this browser (local storage). There is no account, server or database behind the demo.</p></details>
+        <details><summary>Are the reviews and prices real?</summary><p>There are no reviews. Prices are invented concept prices in naira with VAT included.</p></details>
+        <details><summary>What are colour editions?</summary><p>The same product in a limited colourway, with its own accent colour and finishes, priced slightly higher.</p></details>
+      </div></section>
     ${recentProducts().length ? strip(recentProducts().slice(0, 4), 'Recently <em>viewed.</em>', 'Pick up where you left off') : ''}
     ${footer()}
   </div>`;
