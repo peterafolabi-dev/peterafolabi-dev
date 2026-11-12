@@ -15,6 +15,7 @@ function makeMats(accent = '#ff5a2c') {
     leather: new THREE.MeshPhysicalMaterial({ color: '#2a1d16', roughness: 0.45, sheen: 0.6, sheenColor: new THREE.Color('#7a5a44') }),
     accent: new THREE.MeshStandardMaterial({ color: accent, roughness: 0.35, metalness: 0.4, emissive: accent, emissiveIntensity: 0.25 }),
     driver: new THREE.MeshStandardMaterial({ color: '#8c8579', roughness: 0.3, metalness: 0.9 }),
+    satin: new THREE.MeshStandardMaterial({ color: '#a9a49b', roughness: 0.5, metalness: 0.9 }),
   };
 }
 
@@ -45,7 +46,7 @@ function buildOverEar(accentHex) {
     const side = new THREE.Group();
     side.position.set(s * 1.32, 0.35, 0);
     group.add(side);
-    const yoke = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.5, 0.2), m.metal);
+    const yoke = new THREE.Mesh(new RoundedBoxGeometry(0.16, 0.5, 0.2, 4, 0.05), m.satin);
     yoke.position.set(0, -0.22, 0);
     add(side, yoke, [s, 0.4, 0], 0.5);
     const yokeRing = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.03, 12, 32), m.accent);
@@ -433,7 +434,7 @@ function buildAmp(accent) {
   const { group, parts, add } = kit();
   const body = new THREE.Mesh(new RoundedBoxGeometry(2.3, 0.6, 1.7, 6, 0.1), m.shell);
   add(group, body, [0, 0, 0], 0);
-  const panel = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.5, 0.04), m.metal);
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.5, 0.04), m.satin);
   panel.position.set(0, 0, 0.86);
   add(group, panel, [0, 0, 1], 0.6);
   const disp = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.14, 0.02), m.accent);
