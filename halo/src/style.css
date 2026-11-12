@@ -81,7 +81,7 @@ h2 em,.h1s em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px var(
 /* pdp */
 .pdp{display:grid;grid-template-columns:1fr minmax(380px,520px);min-height:100svh;pointer-events:none}
 .gap{min-height:50svh}
-.panel{pointer-events:auto;background:linear-gradient(90deg,rgba(5,5,5,0),rgba(5,5,5,.55) 18%,rgba(5,5,5,.9) 40%);padding:130px clamp(18px,4vw,56px) 70px 12%}
+.panel{pointer-events:auto;background:linear-gradient(90deg,rgba(5,5,5,0),rgba(5,5,5,.3) 35%,rgba(5,5,5,.45));padding:130px clamp(18px,4vw,56px) 70px 12%}
 .crumbs{font-size:13px;color:var(--mute);margin-bottom:22px}.crumbs a{text-decoration:none}.crumbs a:hover{color:var(--fg)}
 .price{font:700 28px Unbounded,sans-serif;margin:14px 0}.price small{font:400 12px Inter;color:var(--mute)}
 .blurb{color:var(--mute);max-width:56ch;margin-bottom:22px}
