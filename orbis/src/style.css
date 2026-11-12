@@ -18,8 +18,8 @@ body{background:var(--bg);color:var(--fg);font:400 16px/1.6 'DM Mono',ui-monospa
 .sec{position:relative;z-index:5;min-height:100svh;padding:110px clamp(18px,6vw,90px) 80px;display:flex;flex-direction:column;justify-content:center;pointer-events:none}
 .sec a,.sec button,.sec label,.sec input{pointer-events:auto}
 .mono{font:500 12px 'DM Mono';letter-spacing:.24em;text-transform:uppercase;color:var(--acc);margin-bottom:18px}
-.hero{align-items:center;text-align:center;justify-content:flex-start;padding-top:150px;padding-bottom:90px}
-h1{font:800 clamp(60px,15vw,240px)/.85 Syne,sans-serif;letter-spacing:.06em;margin-right:-.06em;max-width:100%;text-shadow:0 0 60px rgba(92,200,255,.25)}
+.hero{align-items:center;text-align:center;justify-content:flex-start;padding-top:150px;padding-bottom:90px;overflow-x:clip}
+h1{font:800 clamp(56px,12.5vw,220px)/.85 Syne,sans-serif;letter-spacing:.06em;margin-right:-.06em;max-width:100%;text-shadow:0 0 60px rgba(92,200,255,.25)}
 .sub{margin-top:18px;max-width:52ch;color:var(--mute);font-size:15px}
 .hero .mono{position:absolute;top:110px;left:0;right:0;text-align:center}
 .hint{margin-top:16px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);animation:b 1.6s infinite alternate}
