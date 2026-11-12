@@ -312,12 +312,22 @@ function layout() {
 
 /* keyframes bound to each section */
 let triggers = [];
+/* hero: put the globe's top just below the intro text, so the planet rises under the words instead of covering them */
+function heroY(camZ, scale, fov) {
+  const hero = document.getElementById('hero'), hint = hero?.querySelector('.hint');
+  if (!hint) return -2;
+  const textBottom = hint.getBoundingClientRect().bottom - hero.getBoundingClientRect().top + 24;
+  const halfH = camZ * Math.tan(THREE.MathUtils.degToRad(fov / 2));
+  const topWorld = halfH - 2 * halfH * Math.min(textBottom, innerHeight) / innerHeight;
+  const R = 1.22 * scale; /* atmosphere plus the perspective bulge of a sphere near the camera */
+  return Math.max(topWorld - R, -halfH - R * 0.55);
+}
 function keys() {
   const m = isMobile(), d = dxs();
   const base = { layers: 0, scale: 1 };
   const doc = rot => ({ ...base, camZ: m ? 9 : 7.5, x: m ? 0 : d * 1.35, y: m ? 2.3 : 0.4, scale: m ? 0.55 : 0.7, rot });
   const K = {
-    hero: { ...base, camZ: m ? 7.5 : 6.2, x: 0, y: m ? -0.9 : -1.9, scale: m ? 1.0 : 1.25, rot: 0 },
+    hero: { ...base, camZ: m ? 7.5 : 6.2, x: 0, y: heroY(m ? 7.5 : 6.2, m ? 1.0 : 1.2, m ? 46 : 35), scale: m ? 1.0 : 1.2, rot: 0 },
     spin: { ...base, camZ: m ? 6.8 : 5.4, x: m ? 0 : d, y: m ? 0.9 : 0, rot: 1.6 },
     time: { ...base, camZ: m ? 6.8 : 5.4, x: m ? 0 : -d, y: m ? 0.9 : 0, rot: 3.2 },
     sea: { ...base, camZ: m ? 5.8 : 4.4, x: m ? 0 : d * 0.9, y: m ? 0.8 : 0, scale: 1.08, rot: 4.6 },
@@ -348,6 +358,7 @@ function buildScroll() {
   }
 }
 layout(); buildScroll();
+document.fonts?.ready.then(() => buildScroll());
 addEventListener('resize', () => { layout(); buildScroll(); });
 
 $('#bar') && ScrollTrigger.create({ trigger: '#main', start: 'top top', end: 'bottom bottom', onUpdate: s => { $('#bar').style.transform = `scaleX(${s.progress})`; } });
@@ -563,7 +574,9 @@ $('#mapGotoProbe')?.addEventListener('click', () => { if (probeState) atlas.face
 
 /* cursor, anchors */
 const cur = $('#cur');
-addEventListener('pointermove', e => { cur.style.transform = `translate(${e.clientX}px,${e.clientY}px)`; });
+addEventListener('pointermove', e => { cur.style.transform = `translate(${e.clientX}px,${e.clientY}px)`; cur.style.opacity = 1; });
+addEventListener('pointerleave', () => { cur.style.opacity = 0; });
+document.documentElement.addEventListener('mouseleave', () => { cur.style.opacity = 0; });
 document.addEventListener('pointerover', e => { cur.classList.toggle('big', !!e.target.closest('a,button,label,input')); });
 document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
   const el = document.querySelector(a.getAttribute('href'));
