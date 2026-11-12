@@ -60,7 +60,7 @@ function layout() {
   camera.fov = mobile() ? 42 : 32;
   camera.updateProjectionMatrix();
 }
-addEventListener('resize', () => { layout(); if (curView === 'home') view('home'); });
+addEventListener('resize', () => { layout(); if (curView) view(curView); });
 layout();
 
 let curView = null;
@@ -68,12 +68,34 @@ let curView = null;
 const halfW = camZ => camZ * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
 /* world-x that puts the model's centre at fraction f of the screen width, for the current camera */
 const xAt = (f, camZ) => (f - 0.5) * 2 * camZ * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
+/* product page: fit the model inside the free area left of the info panel and below the header */
+function localBox() {
+  if (!current) return { h: 2.7, cy: 0.6, r: 1.85 };
+  const g = current.group, p = g.position.clone(), r = g.rotation.clone(), sc = g.scale.clone();
+  g.position.set(0, 0, 0); g.rotation.set(0, 0, 0); g.scale.set(1, 1, 1); g.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(g), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+  g.position.copy(p); g.rotation.copy(r); g.scale.copy(sc); g.updateMatrixWorld(true);
+  return { h: size.y, cy: c.y, r: Math.hypot(Math.max(Math.abs(box.min.x), Math.abs(box.max.x)), Math.max(Math.abs(box.min.z), Math.abs(box.max.z))) };
+}
+function productView() {
+  const camZ = 8.4, panelW = document.querySelector('.pdp .panel')?.offsetWidth || 520;
+  const free = Math.max(0.3, 1 - panelW / innerWidth);
+  const halfH = camZ * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const colW = 2 * halfW(camZ) * free;
+  const top = 112, bottom = 36, availPx = Math.max(160, innerHeight - top - bottom);
+  const availH = 2 * halfH * availPx / innerHeight;
+  const b = localBox(), mul = (current ? current.scale : 1) * sizeMul;
+  const k = Math.min(1.0, (availH * 0.68) / b.h, (colW * 0.72) / (2 * b.r));
+  const targetY = halfH - 2 * halfH * (top + availPx / 2) / innerHeight;
+  const base = current?.group.userData.base || 0;
+  return { x: xAt(free / 2, camZ), y: targetY - base - b.cy * k, scale: k / mul, camZ, camY: 0, explode: 0, rot: 0.3, tilt: 0.1 };
+}
 function view(name) {
   curView = name;
   const m = mobile();
   const v = {
-    home: { x: m ? 0 : xAt(0.8, 8.2), y: m ? 1.3 : -0.1, scale: m ? 0.78 : Math.min(0.85, 0.16 * halfW(8.2)), camZ: m ? 9.5 : 8.2, explode: 0, rot: 0.25, tilt: 0.08 },
-    product: { x: m ? 0 : -1.75, y: m ? 1.25 : 0, scale: m ? 0.9 : 1.1, camZ: m ? 9.5 : 8.4, explode: 0, rot: 0.3, tilt: 0.1 },
+    home: { x: m ? 0 : xAt(0.8, 8.2), y: m ? 1.3 : -0.1, scale: m ? 0.78 : Math.min(0.85, 0.16 * halfW(8.2)), camZ: m ? 9.5 : 8.2, camY: 0.3, explode: 0, rot: 0.25, tilt: 0.08 },
+    product: m ? { x: 0, y: 1.25, scale: 0.9, camZ: 9.5, camY: 0.3, explode: 0, rot: 0.3, tilt: 0.1 } : productView(),
   }[name];
   if (!v) return;
   gsap.to(S, { ...v, duration: reduce ? 0 : 1.2, ease: 'power3.inOut', overwrite: 'auto' });
