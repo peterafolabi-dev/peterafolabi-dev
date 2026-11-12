@@ -58,7 +58,7 @@ header nav a:hover{color:var(--ink)}
 @media (max-width:640px){header nav{display:none}header{padding:14px 18px}}
 
 /* ---------- the moving portrait (desktop) ---------- */
-.portrait{position:fixed;left:0;top:17vh;width:var(--pw);aspect-ratio:4/5;z-index:5;pointer-events:none;will-change:transform;margin:0}
+.portrait{position:fixed;left:0;top:max(17vh,104px);width:var(--pw);aspect-ratio:4/5;z-index:5;pointer-events:none;will-change:transform;margin:0}
 .portrait img{width:100%;height:100%;object-fit:cover;border-radius:24px;box-shadow:0 30px 60px -28px rgba(40,25,10,.6),0 0 0 1px color-mix(in srgb,var(--ink) 10%,transparent)}
 .portrait::before{content:"";position:absolute;inset:14px -14px -14px 14px;border-radius:24px;background:var(--marker);z-index:-1}
 .portrait figcaption{position:absolute;bottom:-34px;left:0;right:0;font:600 12px var(--mono);color:var(--mute);text-align:center}
@@ -341,7 +341,7 @@ footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;paddin
       portrait.style.transform = ''
       return
     }
-    const vw = innerWidth
+    const vw = document.documentElement.clientWidth // excludes the scrollbar, so the card never hides under it
     const pw = portrait.offsetWidth
     const cw = Math.min(880, vw - 2 * (pw + 24))
     const gutter = (vw - cw) / 2
@@ -363,7 +363,8 @@ footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;paddin
     }
     const lerp = (p, q) => p + (q - p) * t
     const pos = lerp(a.pos, b.pos), rot = lerp(a.rot, b.rot), s = lerp(a.s, b.s)
-    const x = leftC + (rightC - leftC) * pos - pw / 2
+    // keep the whole card (plus its offset marker and tilt) on screen
+    const x = Math.min(vw - pw - 34, Math.max(20, leftC + (rightC - leftC) * pos - pw / 2))
     const bob = Math.sin(y / 260) * 10
     portrait.style.transform = `translate3d(${x.toFixed(1)}px, ${bob.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg) scale(${s.toFixed(3)})`
   }
